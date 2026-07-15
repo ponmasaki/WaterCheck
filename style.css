@@ -1,0 +1,1158 @@
+/*
+====================================================
+ WaterCheck
+ Ver.1.0.0
+
+ Commit002
+
+ ファイル：
+ style.css
+
+ Part A / B
+
+ 目的：
+ ・ダークモード対応
+ ・Androidスマートフォン最適化
+ ・夜間作業対応
+ ・一覧性重視
+ ・将来拡張可能なCSS構造
+
+====================================================
+*/
+
+
+/*
+====================================================
+ 基本設定
+====================================================
+*/
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+
+    margin: 0;
+
+    padding: 0;
+
+    width: 100%;
+
+    min-height: 100%;
+
+    font-family:
+        "Noto Sans JP",
+        "Yu Gothic",
+        "Meiryo",
+        sans-serif;
+
+    background-color: #121212;
+
+    color: #ffffff;
+
+}
+
+
+/*
+====================================================
+ アプリ全体
+====================================================
+*/
+
+#app {
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+/*
+====================================================
+ ヘッダー
+====================================================
+*/
+
+#header {
+
+    padding: 16px;
+
+    background-color: #1f1f1f;
+
+    border-bottom: 1px solid #444;
+
+}
+
+
+#appTitle {
+
+    margin: 0;
+
+    font-size: 26px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+
+}
+
+
+#appSubTitle {
+
+    margin: 6px 0 0;
+
+    color: #cccccc;
+
+    font-size: 14px;
+
+}
+
+
+/*
+====================================================
+ 進捗表示エリア
+====================================================
+*/
+
+#progressArea {
+
+    padding: 16px;
+
+    background-color: #181818;
+
+}
+
+
+#progressText {
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+}
+
+
+#progressBarArea {
+
+    width: 100%;
+
+    margin-top: 12px;
+
+}
+
+
+#progressBar {
+
+    width: 100%;
+
+    height: 18px;
+
+    background-color: #333333;
+
+    border-radius: 9px;
+
+    overflow: hidden;
+
+}
+
+
+#progressValue {
+
+    width: 0%;
+
+    height: 100%;
+
+    background-color: #2ecc71;
+
+    transition:
+        width 0.3s ease;
+
+}
+
+
+#remainingArea {
+
+    margin-top: 10px;
+
+    font-size: 16px;
+
+}
+
+
+#remainingNumbers {
+
+    margin-top: 8px;
+
+    font-size: 14px;
+
+    color: #ffcc66;
+
+}
+
+
+/*
+====================================================
+ メインエリア
+====================================================
+*/
+
+#mainArea {
+
+    flex: 1;
+
+    width: 100%;
+
+    padding: 10px;
+
+    overflow-x: auto;
+
+}
+
+
+/*
+====================================================
+ チェック一覧テーブル
+====================================================
+*/
+
+#checkTable {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    background-color: #1e1e1e;
+
+    min-width: 850px;
+
+}
+
+
+#checkTable th {
+
+    background-color: #292929;
+
+    color: #ffffff;
+
+    padding: 12px 8px;
+
+    border: 1px solid #555;
+
+    font-size: 14px;
+
+    text-align: center;
+
+    position: sticky;
+
+    top: 0;
+
+}
+
+
+#checkTable td {
+
+    padding: 10px 8px;
+
+    border: 1px solid #444;
+
+    font-size: 14px;
+
+    text-align: center;
+
+    vertical-align: middle;
+
+}
+
+
+/*
+====================================================
+ 列幅設定
+====================================================
+*/
+
+
+.colNo {
+
+    width: 50px;
+
+}
+
+
+.colPlace {
+
+    width: 180px;
+
+    text-align: left !important;
+
+}
+
+
+.colStatus {
+
+    width: 100px;
+
+}
+
+
+.colPhoto {
+
+    width: 120px;
+
+}
+
+
+.colCheckTime {
+
+    width: 140px;
+
+}
+
+
+.colPhotoTime {
+
+    width: 140px;
+
+}
+
+
+.colMemo {
+
+    width: 200px;
+
+}
+
+
+/*
+====================================================
+ 状態表示用
+
+ app.js側でclass付与予定
+
+ 未実施
+ .status-none
+
+ チェック済み
+ .status-check
+
+ 写真あり
+ .status-photo
+
+====================================================
+*/
+
+
+.status-none {
+
+    background-color: #4b1f1f;
+
+}
+
+
+.status-check {
+
+    background-color: #4b451f;
+
+}
+
+
+.status-photo {
+
+    background-color: #1f4b2a;
+
+}
+
+/*
+====================================================
+ ボタンエリア
+====================================================
+*/
+
+#footer {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 16px;
+
+    padding: 16px;
+
+    background-color: #1f1f1f;
+
+    border-top: 1px solid #444;
+
+    position: sticky;
+
+    bottom: 0;
+
+}
+
+
+/*
+====================================================
+ ボタン共通
+====================================================
+*/
+
+button {
+
+    min-width: 140px;
+
+    min-height: 52px;
+
+    padding: 12px 20px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    color: #ffffff;
+
+    touch-action: manipulation;
+
+}
+
+
+/*
+====================================================
+ 保存ボタン
+====================================================
+*/
+
+#saveButton {
+
+    background-color: #1976d2;
+
+}
+
+
+#saveButton:active {
+
+    background-color: #0d47a1;
+
+}
+
+
+/*
+====================================================
+ リセットボタン
+====================================================
+*/
+
+#resetButton {
+
+    background-color: #b71c1c;
+
+}
+
+
+#resetButton:active {
+
+    background-color: #7f0000;
+
+}
+
+
+/*
+====================================================
+ チェック状態表示
+
+ 将来的にapp.jsで行単位へ付与予定
+
+====================================================
+*/
+
+
+.row-none {
+
+    background-color: rgba(255, 0, 0, 0.15);
+
+}
+
+
+.row-check {
+
+    background-color: rgba(255, 220, 0, 0.15);
+
+}
+
+
+.row-photo {
+
+    background-color: rgba(0, 180, 80, 0.15);
+
+}
+
+
+/*
+====================================================
+ 写真表示エリア
+====================================================
+
+ 将来：
+ ・IndexedDBから画像取得
+ ・最大3枚表示
+ ・タップ拡大
+
+====================================================
+*/
+
+
+.photo-container {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 5px;
+
+}
+
+
+.photo-thumbnail {
+
+    width: 60px;
+
+    height: 60px;
+
+    object-fit: cover;
+
+    border-radius: 6px;
+
+    border: 1px solid #666;
+
+}
+
+
+/*
+====================================================
+ メモ入力欄
+====================================================
+*/
+
+.memo-input {
+
+    width: 100%;
+
+    min-height: 60px;
+
+    padding: 8px;
+
+    background-color: #252525;
+
+    color: #ffffff;
+
+    border: 1px solid #555;
+
+    border-radius: 6px;
+
+    resize: vertical;
+
+    font-size: 15px;
+
+}
+
+
+/*
+====================================================
+ スマートフォン対応
+====================================================
+*/
+
+
+@media screen and (max-width: 768px) {
+
+
+    #appTitle {
+
+        font-size: 22px;
+
+    }
+
+
+    #progressText {
+
+        font-size: 18px;
+
+    }
+
+
+    #mainArea {
+
+        padding: 5px;
+
+    }
+
+
+    #checkTable {
+
+        font-size: 13px;
+
+    }
+
+
+    #checkTable th {
+
+        padding: 10px 5px;
+
+    }
+
+
+    #checkTable td {
+
+        padding: 8px 5px;
+
+    }
+
+
+    button {
+
+        min-width: 120px;
+
+        min-height: 56px;
+
+        font-size: 17px;
+
+    }
+
+
+}
+
+
+/*
+====================================================
+ 横向きスマホ対応
+====================================================
+*/
+
+
+@media screen and (max-height: 500px)
+and (orientation: landscape) {
+
+
+    #header {
+
+        padding: 8px;
+
+    }
+
+
+    #progressArea {
+
+        padding: 8px;
+
+    }
+
+
+    #footer {
+
+        padding: 8px;
+
+    }
+
+
+}
+
+
+/*
+====================================================
+ Androidタッチ操作改善
+====================================================
+*/
+
+
+button,
+input,
+textarea {
+
+    -webkit-tap-highlight-color: transparent;
+
+}
+
+
+/*
+====================================================
+ ダークモード強制維持
+
+ Androidの端末設定に影響されない
+
+====================================================
+*/
+
+
+@media (prefers-color-scheme: dark) {
+
+
+    body {
+
+        background-color: #121212;
+
+    }
+
+
+}
+
+
+/*
+====================================================
+ 将来拡張用
+
+ ・設定画面
+ ・履歴画面
+ ・バックアップ画面
+ ・PDF出力画面
+
+====================================================
+*/
+
+
+.hidden {
+
+    display: none;
+
+}
+
+/*
+====================================================
+
+ WaterCheck
+
+ 写真機能用CSS
+
+ Commit013
+
+====================================================
+*/
+
+
+/*
+----------------------------------------------------
+ 写真ダイアログ
+----------------------------------------------------
+*/
+
+
+.photo-dialog {
+
+    position: fixed;
+
+    top:0;
+
+    left:0;
+
+    width:100%;
+
+    height:100%;
+
+    background:
+        rgba(0,0,0,0.75);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    z-index:1000;
+
+}
+
+
+
+
+.photo-dialog-content {
+
+
+    width:90%;
+
+    max-width:500px;
+
+    background:#1e1e1e;
+
+    border-radius:12px;
+
+    padding:20px;
+
+    box-sizing:border-box;
+
+}
+
+
+
+
+/*
+----------------------------------------------------
+ 閉じるボタン
+----------------------------------------------------
+*/
+
+
+#closePhotoDialog {
+
+
+    width:50px;
+
+    height:50px;
+
+    font-size:30px;
+
+    border-radius:50%;
+
+    border:none;
+
+    cursor:pointer;
+
+}
+
+
+
+
+/*
+----------------------------------------------------
+ 写真プレビュー領域
+----------------------------------------------------
+*/
+
+
+#photoPreviewArea {
+
+
+    margin-top:20px;
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+
+}
+
+
+
+
+.photo-thumbnail {
+
+
+    width:100px;
+
+    height:100px;
+
+    object-fit:cover;
+
+    border-radius:8px;
+
+    border:2px solid #555;
+
+
+}
+
+
+
+
+/*
+----------------------------------------------------
+ 写真ボタン
+
+ 将来一覧へ追加
+
+----------------------------------------------------
+*/
+
+
+.photo-button {
+
+
+    width:60px;
+
+    height:50px;
+
+    font-size:26px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+
+}
+
+
+
+
+/*
+----------------------------------------------------
+ Android向け
+
+ タップ領域確保
+
+----------------------------------------------------
+*/
+
+
+@media(max-width:600px){
+
+
+    .photo-dialog-content{
+
+
+        width:95%;
+
+
+    }
+
+
+
+    .photo-thumbnail{
+
+
+        width:80px;
+
+        height:80px;
+
+
+    }
+
+
+
+}
+
+/*
+====================================================
+
+写真ボタン
+
+一覧表内用
+
+Commit014 修正
+
+====================================================
+*/
+
+
+.photo-button {
+
+    width:36px;
+
+    height:32px;
+
+    padding:0;
+
+    margin:0;
+
+    font-size:18px;
+
+    line-height:1;
+
+    border-radius:6px;
+
+    border:1px solid #555;
+
+    background:#333;
+
+    cursor:pointer;
+
+}
+
+
+/*
+表セル内の余白調整
+
+*/
+
+#checkTable td {
+
+    padding-top:4px;
+
+    padding-bottom:4px;
+
+}
+
+/*
+====================================================
+
+一覧表 コンパクト表示
+
+Commit014 修正2
+
+====================================================
+*/
+
+
+#checkTable {
+
+    border-collapse:collapse;
+
+}
+
+
+
+#checkTable td,
+#checkTable th {
+
+
+    padding:4px 8px;
+
+    height:36px;
+
+    line-height:1.2;
+
+    vertical-align:middle;
+
+
+}
+
+
+
+/*
+写真ボタンだけ例外
+
+*/
+
+#checkTable .photo-button {
+
+
+    width:36px;
+
+    height:28px;
+
+    min-height:28px;
+
+    padding:0;
+
+    margin:0;
+
+    font-size:16px;
+
+    line-height:1;
+
+}
+
+/*
+====================================================
+
+表セル内 縦位置調整
+
+Commit014 修正3
+
+====================================================
+*/
+
+
+#checkTable td {
+
+    vertical-align: middle;
+
+}
+
+
+
+/*
+====================================================
+
+写真ボタン位置調整
+
+====================================================
+*/
+
+#checkTable .photo-button {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    width:36px;
+
+    height:24px;
+
+    padding:0;
+
+    margin:0;
+
+    font-size:16px;
+
+    line-height:1;
+
+    vertical-align:middle;
+
+}
+
+
+/*
+====================================================
+
+カメラアイコン
+
+====================================================
+*/
+
+
+.photo-button {
+
+    width:60px;
+
+    height:40px;
+
+    padding:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+
+
+.camera-icon {
+
+    width:32px;
+
+    height:32px;
+
+    display:block;
+
+}
+
+/*
+====================================================
+
+写真サムネイル
+
+Commit015
+
+====================================================
+*/
+
+
+.photo-preview {
+
+
+    width:48px;
+
+    height:48px;
+
+    object-fit:cover;
+
+    border-radius:4px;
+
+
+}
