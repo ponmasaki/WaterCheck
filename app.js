@@ -87,25 +87,30 @@ document.addEventListener(
 
 
 
+/*
+====================================================
+アプリ初期化
+====================================================
+*/
+
 function initializeApp() {
 
-
+    // データ読込
     loadWorkData();
 
-
+    // 画面生成
     createChecklist();
-
-
     updateProgress();
 
-
+    // イベント登録
     setupButtons();
+    setupCameraInput();
+    setupPhotoDialog();
 
-
+    // PWA
     registerServiceWorker();
 
-    setupCameraInput();
-
+    // 写真DB
     initPhotoDB(
         restorePhotos
     );
@@ -205,40 +210,190 @@ function saveWorkData() {
 ====================================================
 */
 
+/*
+====================================================
+TDセル作成
+====================================================
+*/
+
+/*
+====================================================
+TDセル作成
+====================================================
+*/
+
+function createCell(
+    text = "",
+    className = ""
+) {
+
+    const cell =
+        document.createElement(
+            "td"
+        );
+
+    cell.textContent =
+        text;
+
+    if (className) {
+
+        cell.className =
+            className;
+
+    }
+
+    return cell;
+
+}
+
+/*
+====================================================
+状態セル作成
+====================================================
+*/
+
+function createStatusCell(item) {
+
+    const statusCell =
+        document.createElement(
+            "td"
+        );
+
+    const checkbox =
+        document.createElement(
+            "input"
+        );
+
+    checkbox.type =
+        "checkbox";
+
+    checkbox.checked =
+        item.status !== "none";
+
+    checkbox.addEventListener(
+
+        "change",
+
+        () => {
+
+            updateStatus(
+
+                item.id,
+
+                checkbox.checked
+
+            );
+
+        }
+
+    );
+
+    statusCell.appendChild(
+        checkbox
+    );
+
+    return statusCell;
+
+}
+
+/*
+====================================================
+写真セル作成
+====================================================
+*/
+
+function createPhotoCell(item) {
+
+    const photoCell =
+        document.createElement(
+            "td"
+        );
+
+    const photoButton =
+        document.createElement(
+            "button"
+        );
+
+    const cameraIcon =
+        document.createElement(
+            "img"
+        );
+
+    cameraIcon.src =
+        "icons/camera.png";
+
+    cameraIcon.alt =
+        "写真";
+
+    cameraIcon.className =
+        "camera-icon";
+
+    photoButton.appendChild(
+        cameraIcon
+    );
+
+    photoButton.className =
+        "photo-button";
+
+    photoButton.dataset.photoId =
+        item.id;
+
+    photoButton.addEventListener(
+
+        "click",
+
+        () => {
+
+            currentPhotoItemId =
+                item.id;
+
+            const cameraInput =
+                document.getElementById(
+                    "cameraInput"
+                );
+
+            if (cameraInput) {
+
+                cameraInput.click();
+
+            }
+
+        }
+
+    );
+
+    photoCell.appendChild(
+        photoButton
+    );
+
+    return photoCell;
+
+}
 
 function createChecklist() {
-
 
     const tbody =
         document.getElementById(
             "checkTableBody"
         );
 
-
     tbody.innerHTML = "";
-
-
 
     workData
         .sort(
-            (a,b)=>
-            a.order - b.order
+            (a, b) =>
+                a.order - b.order
         )
         .forEach(
             item => {
-
 
                 const row =
                     document.createElement(
                         "tr"
                     );
 
-
-
                 row.dataset.id =
                     item.id;
-
-
 
                 /*
                 --------------------------------
@@ -246,23 +401,11 @@ function createChecklist() {
                 --------------------------------
                 */
 
-
-                const noCell =
-                    document.createElement(
-                        "td"
-                    );
-
-
-                noCell.textContent =
-                    item.order;
-
-
-
                 row.appendChild(
-                    noCell
+                    createCell(
+                        item.order
+                    )
                 );
-
-
 
                 /*
                 --------------------------------
@@ -270,23 +413,11 @@ function createChecklist() {
                 --------------------------------
                 */
 
-
-                const nameCell =
-                    document.createElement(
-                        "td"
-                    );
-
-
-                nameCell.textContent =
-                    item.name;
-
-
-
                 row.appendChild(
-                    nameCell
+                    createCell(
+                        item.name
+                    )
                 );
-
-
 
                 /*
                 --------------------------------
@@ -294,34 +425,27 @@ function createChecklist() {
                 --------------------------------
                 */
 
-
                 const statusCell =
                     document.createElement(
                         "td"
                     );
-
 
                 const checkbox =
                     document.createElement(
                         "input"
                     );
 
-
                 checkbox.type =
                     "checkbox";
 
-
                 checkbox.checked =
                     item.status !== "none";
-
-
 
                 checkbox.addEventListener(
 
                     "change",
 
                     () => {
-
 
                         updateStatus(
 
@@ -331,23 +455,17 @@ function createChecklist() {
 
                         );
 
-
                     }
 
                 );
-
-
 
                 statusCell.appendChild(
                     checkbox
                 );
 
-
                 row.appendChild(
                     statusCell
                 );
-
-
 
                 /*
                 --------------------------------
@@ -355,53 +473,39 @@ function createChecklist() {
                 --------------------------------
                 */
 
-
                 const photoCell =
                     document.createElement(
                         "td"
                     );
-
-
 
                 const photoButton =
                     document.createElement(
                         "button"
                     );
 
-
-
                 const cameraIcon =
                     document.createElement(
                         "img"
                     );
 
-
                 cameraIcon.src =
                     "icons/camera.png";
-
 
                 cameraIcon.alt =
                     "写真";
 
-
                 cameraIcon.className =
                     "camera-icon";
-
 
                 photoButton.appendChild(
                     cameraIcon
                 );
 
-
                 photoButton.className =
                     "photo-button";
 
-
-
                 photoButton.dataset.photoId =
                     item.id;
-
-
 
                 photoButton.addEventListener(
 
@@ -409,45 +513,31 @@ function createChecklist() {
 
                     () => {
 
-
                         currentPhotoItemId =
                             item.id;
-
-
 
                         const cameraInput =
                             document.getElementById(
                                 "cameraInput"
                             );
 
-
-
-                        if(cameraInput){
-
+                        if (cameraInput) {
 
                             cameraInput.click();
 
-
                         }
-
 
                     }
 
                 );
 
-
-
                 photoCell.appendChild(
                     photoButton
                 );
 
-
-
                 row.appendChild(
                     photoCell
                 );
-
-
 
                 /*
                 --------------------------------
@@ -455,23 +545,11 @@ function createChecklist() {
                 --------------------------------
                 */
 
-
-                const checkTimeCell =
-                    document.createElement(
-                        "td"
-                    );
-
-
-                checkTimeCell.textContent =
-                    item.checkedTime || "-";
-
-
-
                 row.appendChild(
-                    checkTimeCell
+                    createCell(
+                        item.checkedTime || "-"
+                    )
                 );
-
-
 
                 /*
                 --------------------------------
@@ -479,23 +557,11 @@ function createChecklist() {
                 --------------------------------
                 */
 
-
-                const photoTimeCell =
-                    document.createElement(
-                        "td"
-                    );
-
-
-                photoTimeCell.textContent =
-                    item.photoTime || "-";
-
-
-
                 row.appendChild(
-                    photoTimeCell
+                    createCell(
+                        item.photoTime || "-"
+                    )
                 );
-
-
 
                 /*
                 --------------------------------
@@ -503,29 +569,15 @@ function createChecklist() {
                 --------------------------------
                 */
 
-
-                const memoCell =
-                    document.createElement(
-                        "td"
-                    );
-
-
-                memoCell.textContent =
-                    item.memo || "";
-
-
-
                 row.appendChild(
-                    memoCell
+                    createCell(
+                        item.memo || ""
+                    )
                 );
-
-
 
                 tbody.appendChild(
                     row
                 );
-
-
 
                 updateRowColor(
 
@@ -535,10 +587,9 @@ function createChecklist() {
 
                 );
 
-
             }
-        );
 
+        );
 
 }
 
@@ -1261,6 +1312,19 @@ function setupCameraInput(){
                         img.className =
                             "photo-preview";
 
+                        img.addEventListener(
+
+                            "click",
+
+                            () => {
+
+                                showPhotoDialog(
+                                    img.src
+                                );
+
+                            }
+
+                        );
 
                         photoCell.innerHTML =
                             "";
@@ -1549,6 +1613,19 @@ function restorePhotos(){
                     img.className =
                         "photo-preview";
 
+                    img.addEventListener(
+
+                        "click",
+
+                        () => {
+
+                            showPhotoDialog(
+                                img.src
+                            );
+
+                        }
+
+                    );
 
                     photoCell.innerHTML =
                         "";
@@ -1571,5 +1648,125 @@ function restorePhotos(){
 
         };
 
+
+}
+
+/*
+====================================================
+
+写真拡大ダイアログ設定
+
+Ver1.0.01
+
+====================================================
+*/
+
+function setupPhotoDialog() {
+
+    const dialog =
+        document.getElementById(
+            "photoDialog"
+        );
+
+    const closeButton =
+        document.getElementById(
+            "closePhotoDialog"
+        );
+
+    if (!dialog || !closeButton) {
+
+        return;
+
+    }
+
+    // ×ボタン
+    closeButton.addEventListener(
+        "click",
+        closePhotoDialog
+    );
+
+}
+
+/*
+====================================================
+
+写真表示
+
+====================================================
+*/
+
+function showPhotoDialog(imageUrl) {
+
+    const dialog =
+        document.getElementById(
+            "photoDialog"
+        );
+
+    const area =
+        document.getElementById(
+            "photoPreviewArea"
+        );
+
+    if (!dialog || !area) {
+
+        return;
+
+    }
+
+    area.innerHTML = "";
+
+    const img =
+        document.createElement(
+            "img"
+        );
+
+    img.src =
+        imageUrl;
+
+    img.className =
+        "photo-dialog-image";
+
+    area.appendChild(
+        img
+    );
+
+    dialog.style.display =
+        "flex";
+
+}
+
+/*
+====================================================
+
+写真ダイアログ閉じる
+
+====================================================
+*/
+
+function closePhotoDialog() {
+
+    const dialog =
+        document.getElementById(
+            "photoDialog"
+        );
+
+    const area =
+        document.getElementById(
+            "photoPreviewArea"
+        );
+
+    if (!dialog || !area) {
+
+        return;
+
+    }
+
+    // 一度非表示にする
+    dialog.style.display = "none";
+
+    window.scrollTo(0, 0);
+
+    // 次回表示時にズーム状態をリセットするため画像を削除
+    area.innerHTML = "";
 
 }
