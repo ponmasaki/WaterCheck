@@ -290,8 +290,16 @@ Androidカメラ呼び出し
 
 
 <!--
-写真表示用ダイアログ
-今後サムネイル表示で使用
+====================================================
+写真表示ダイアログ
+
+Ver1.0.03
+
+・写真拡大表示
+・写真撮り直し
+・写真削除
+
+====================================================
 -->
 
 <div
@@ -300,16 +308,22 @@ Androidカメラ呼び出し
     style="display:none;"
 >
 
+    <div
+        class="photo-dialog-content"
+    >
 
-    <div class="photo-dialog-content">
-
+        <!-- 閉じる -->
 
         <button
             id="closePhotoDialog"
         >
+
             ×
+
         </button>
 
+
+        <!-- 写真 -->
 
         <div
             id="photoPreviewArea"
@@ -317,8 +331,34 @@ Androidカメラ呼び出し
         </div>
 
 
-    </div>
+        <!-- 下部ボタン -->
 
+        <div
+            class="photo-dialog-footer"
+        >
+
+            <button
+                id="deletePhotoButton"
+            >
+
+                🗑 削除
+
+            </button>
+
+
+            <button
+                id="retakePhotoButton"
+            >
+
+                📷 撮り直す
+
+            </button>
+
+
+        </div>
+
+
+    </div>
 
 </div>
 </body>

@@ -54,6 +54,26 @@ const STORAGE_KEY = "WaterCheck_Data_V1";
 
 let currentPhotoItemId = null;
 
+/*
+====================================================
+
+写真ダイアログで表示中の写真ID
+
+====================================================
+*/
+
+let currentDialogPhotoId = null;
+
+
+/*
+====================================================
+
+写真撮り直し中
+
+====================================================
+*/
+
+let isRetakePhoto = false;
 
 /*
 ====================================================
@@ -1205,161 +1225,153 @@ function registerServiceWorker() {
 ====================================================
 写真入力設定
 
-Commit014 Part B
+Ver1.0.02
+写真撮り直し対応
 
 ====================================================
 */
 
-
-function setupCameraInput(){
-
+function setupCameraInput() {
 
     const cameraInput =
         document.getElementById(
             "cameraInput"
         );
 
-
-
-    if(!cameraInput){
-
+    if (!cameraInput) {
 
         return;
 
-
     }
-
-
 
     cameraInput.addEventListener(
 
         "change",
 
-        (event)=>{
-
+        (event) => {
 
             const file =
                 event.target.files[0];
 
+            if (!file) {
 
-
-            if(!file){
                 return;
+
             }
-
-
 
             currentPhotoFile =
                 file;
 
-                const now =
-                    new Date();
+            const photoItemId =
+                currentPhotoItemId;
 
-                const photoTime =
-                    now.toLocaleString(
-                        "ja-JP"
+            const photoTime =
+                new Date().toLocaleString(
+                    "ja-JP"
                 );
 
             savePhoto(
-                currentPhotoItemId,
+                photoItemId,
                 file
             );
 
             console.log(
-
                 "写真取得:",
-
                 file.name
-
             );
 
-            // 撮影済み表示へ変更
-
-            if(currentPhotoItemId !== null){
-
+            if (photoItemId !== null) {
 
                 const row =
                     document.querySelector(
 
-                        `tr[data-id="${currentPhotoItemId}"]`
+                        `tr[data-id="${photoItemId}"]`
 
                     );
 
-                    if(row){
+                if (row) {
 
+                    const photoCell =
+                        row.children[3];
 
-                        const photoCell =
-                            row.children[3];
+                    const photoTimeCell =
+                        row.children[5];
 
-                        const photoTimeCell =
-                            row.children[5];
+                    photoTimeCell.textContent =
+                        photoTime;
 
-                        photoTimeCell.textContent =
+                    const img =
+                        document.createElement(
+                            "img"
+                        );
+
+                    img.src =
+                        URL.createObjectURL(
+                            file
+                        );
+
+                    img.className =
+                        "photo-preview";
+
+                    img.addEventListener(
+
+                        "click",
+
+                        () => {
+
+                            showPhotoDialog(
+                                img.src,
+                                photoItemId
+                            );
+
+                        }
+
+                    );
+
+                    photoCell.innerHTML =
+                        "";
+
+                    photoCell.appendChild(
+                        img
+                    );
+
+                    const item =
+                        workData.find(
+
+                            data =>
+
+                                data.id ===
+                                photoItemId
+
+                        );
+
+                    if (item) {
+
+                        item.photoTime =
                             photoTime;
 
-                        const img =
-                            document.createElement(
-                                "img"
-                            );
-
-
-                        img.src =
-                            URL.createObjectURL(
-                                file
-                            );
-
-
-                        img.className =
-                            "photo-preview";
-
-                        img.addEventListener(
-
-                            "click",
-
-                            () => {
-
-                                showPhotoDialog(
-                                    img.src
-                                );
-
-                            }
-
-                        );
-
-                        photoCell.innerHTML =
-                            "";
-
-
-                        photoCell.appendChild(
-                            img
-                        );
-
-                        const item =
-                            workData.find(
-
-                                data =>
-                                    data.id ===
-                                    currentPhotoItemId
-
-                            );
-
-                        if(item){
-
-                            item.photoTime =
-                                photoTime;
-
-                            saveWorkData();
-
-                        }                        
+                        saveWorkData();
 
                     }
 
+                }
+
             }
+
+            currentPhotoItemId =
+                null;
+
+            currentPhotoFile =
+                null;
+
+            cameraInput.value =
+                "";
+
+            closePhotoDialog();
 
         }
 
     );
-
 
 }
 
@@ -1620,7 +1632,8 @@ function restorePhotos(){
                         () => {
 
                             showPhotoDialog(
-                                img.src
+                                img.src,
+                                data.id
                             );
 
                         }
@@ -1656,7 +1669,11 @@ function restorePhotos(){
 
 写真拡大ダイアログ設定
 
-Ver1.0.01
+Ver1.0.03
+
+・閉じる
+・撮り直し
+・削除
 
 ====================================================
 */
@@ -1673,17 +1690,55 @@ function setupPhotoDialog() {
             "closePhotoDialog"
         );
 
-    if (!dialog || !closeButton) {
+    const retakeButton =
+        document.getElementById(
+            "retakePhotoButton"
+        );
+
+    const deleteButton =
+        document.getElementById(
+            "deletePhotoButton"
+        );
+
+
+    if (
+        !dialog ||
+        !closeButton ||
+        !retakeButton ||
+        !deleteButton
+    ) {
 
         return;
 
     }
 
-    // ×ボタン
+
     closeButton.addEventListener(
+
         "click",
+
         closePhotoDialog
+
     );
+
+
+    retakeButton.addEventListener(
+
+        "click",
+
+        retakePhoto
+
+    );
+
+
+    deleteButton.addEventListener(
+
+        "click",
+
+        deleteCurrentPhoto
+
+    );
+
 
 }
 
@@ -1692,10 +1747,15 @@ function setupPhotoDialog() {
 
 写真表示
 
+Ver1.0.02
+
 ====================================================
 */
 
-function showPhotoDialog(imageUrl) {
+function showPhotoDialog(
+    imageUrl,
+    itemId
+) {
 
     const dialog =
         document.getElementById(
@@ -1712,6 +1772,9 @@ function showPhotoDialog(imageUrl) {
         return;
 
     }
+
+    currentDialogPhotoId =
+        itemId;
 
     area.innerHTML = "";
 
@@ -1768,5 +1831,259 @@ function closePhotoDialog() {
 
     // 次回表示時にズーム状態をリセットするため画像を削除
     area.innerHTML = "";
+
+}
+
+/*
+====================================================
+
+写真撮り直し
+
+Ver1.0.02
+
+====================================================
+*/
+
+function retakePhoto() {
+
+    if (currentDialogPhotoId === null) {
+
+        return;
+
+    }
+
+    const result =
+        confirm(
+            "この写真を撮り直しますか？"
+        );
+
+    if (!result) {
+
+        return;
+
+    }
+
+    currentPhotoItemId =
+        currentDialogPhotoId;
+
+    closePhotoDialog();
+
+    const cameraInput =
+        document.getElementById(
+            "cameraInput"
+        );
+
+    if (!cameraInput) {
+
+        return;
+
+    }
+
+    cameraInput.value = "";
+
+    cameraInput.click();
+
+}
+
+/*
+====================================================
+
+写真削除
+
+Ver1.0.03
+
+====================================================
+*/
+
+
+function deleteCurrentPhoto() {
+
+
+    if (
+        currentDialogPhotoId === null
+    ) {
+
+        return;
+
+    }
+
+
+
+    const result =
+        confirm(
+
+            "この写真を削除しますか？"
+
+        );
+
+
+
+    if (!result) {
+
+        return;
+
+    }
+
+
+
+    const photoId =
+        currentDialogPhotoId;
+
+
+
+    deletePhoto(
+
+        photoId,
+
+        () => {
+
+
+            const item =
+                workData.find(
+
+                    data =>
+
+                        data.id === photoId
+
+                );
+
+
+
+            if (item) {
+
+
+                item.photoTime =
+                    "";
+
+
+                item.photos =
+                    [];
+
+
+            }
+
+            saveWorkData();
+
+            createChecklist();
+
+            setTimeout(
+                () => {
+
+                    restorePhotos();
+
+                },
+                100
+            );
+
+            updateProgress();
+
+            closePhotoDialog();
+
+        }
+
+    );
+
+
+}
+
+
+
+/*
+====================================================
+
+IndexedDB 写真削除
+
+Ver1.0.03
+
+====================================================
+*/
+
+
+function deletePhoto(
+    id,
+    callback
+) {
+
+
+    if (!photoDB) {
+
+
+        console.error(
+
+            "写真DB未準備"
+
+        );
+
+
+        return;
+
+    }
+
+
+
+    const transaction =
+        photoDB.transaction(
+
+            [
+                "photos"
+
+            ],
+
+            "readwrite"
+
+        );
+
+
+
+    const store =
+        transaction.objectStore(
+
+            "photos"
+
+        );
+
+
+
+    const request =
+        store.delete(
+
+            id
+
+        );
+
+
+
+    request.onsuccess =
+        () => {
+
+
+            console.log(
+
+                "写真削除完了:",
+
+                id
+
+            );
+
+
+        };
+
+
+
+    transaction.oncomplete =
+        () => {
+
+
+            if (callback) {
+
+
+                callback();
+
+
+            }
+
+
+        };
+
 
 }

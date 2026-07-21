@@ -776,20 +776,21 @@ textarea {
 
 
 
-.photo-dialog-content {
+.photo-dialog-content{
 
+    position:relative;
 
-    width:90%;
+    display:flex;
 
-    max-width:500px;
+    flex-direction:column;
 
-    background:#1e1e1e;
+    align-items:center;
 
-    border-radius:12px;
+    justify-content:center;
 
-    padding:20px;
+    width:100%;
 
-    box-sizing:border-box;
+    height:100%;
 
 }
 
@@ -1235,5 +1236,112 @@ Commit015
     cursor:pointer;
 
     z-index:10000;
+
+}
+
+/*==================================================
+写真ダイアログ フッター
+
+Ver1.0.02
+==================================================*/
+
+.photo-dialog-footer{
+
+    width:100%;
+
+    padding:15px;
+
+    box-sizing:border-box;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+/*==================================================
+撮り直しボタン
+==================================================*/
+
+#retakePhotoButton{
+
+    min-width:220px;
+
+    height:52px;
+
+    padding:0 20px;
+
+    border:none;
+
+    border-radius:8px;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    background:#2196F3;
+
+    color:#ffffff;
+
+}
+
+#retakePhotoButton:active{
+
+    transform:scale(0.98);
+
+}
+
+/*
+====================================================
+ 写真削除ボタン
+
+ Ver1.0.03
+
+====================================================
+*/
+
+
+#deletePhotoButton {
+
+    padding: 12px 20px;
+
+    font-size: 16px;
+
+    border-radius: 8px;
+
+    border: none;
+
+    background-color: #b71c1c;
+
+    color: #ffffff;
+
+    cursor: pointer;
+
+}
+
+
+/*
+====================================================
+ 写真ダイアログボタン配置調整
+
+ Ver1.0.03
+
+====================================================
+*/
+
+
+.photo-dialog-footer {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 16px;
+
+    padding: 16px;
 
 }
