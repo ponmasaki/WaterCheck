@@ -32,13 +32,11 @@
 ====================================================
 */
 
-
 /*
 ====================================================
  定数
 ====================================================
 */
-
 
 const STORAGE_KEY = "WaterCheck_Data_V1";
 
@@ -64,7 +62,6 @@ let currentPhotoItemId = null;
 
 let currentDialogPhotoId = null;
 
-
 /*
 ====================================================
 
@@ -88,7 +85,6 @@ let isRetakePhoto = false;
 ====================================================
 */
 
-
 let workData = [];
 
 let currentPhotoFile = null;
@@ -99,13 +95,10 @@ let currentPhotoFile = null;
 ====================================================
 */
 
-
 document.addEventListener(
     "DOMContentLoaded",
     initializeApp
 );
-
-
 
 /*
 ====================================================
@@ -137,35 +130,25 @@ function initializeApp() {
 
 }
 
-
-
 /*
 ====================================================
  保存データ読み込み
 ====================================================
 */
 
-
 function loadWorkData() {
-
 
     const savedData =
         localStorage.getItem(
             STORAGE_KEY
         );
 
-
-
     if (savedData) {
-
 
         workData =
             JSON.parse(savedData);
 
-
-
     } else {
-
 
         workData =
             CHECK_ITEMS.map(
@@ -190,16 +173,11 @@ function loadWorkData() {
                 })
             );
 
-
         saveWorkData();
-
 
     }
 
-
 }
-
-
 
 /*
 ====================================================
@@ -207,9 +185,7 @@ function loadWorkData() {
 ====================================================
 */
 
-
 function saveWorkData() {
-
 
     localStorage.setItem(
 
@@ -219,10 +195,7 @@ function saveWorkData() {
 
     );
 
-
 }
-
-
 
 /*
 ====================================================
@@ -619,9 +592,7 @@ function createChecklist() {
 ====================================================
 */
 
-
 function updateStatus(id, checked) {
-
 
     const target =
         workData.find(
@@ -629,54 +600,37 @@ function updateStatus(id, checked) {
                 item.id === id
         );
 
-
-
     if (!target) {
 
         return;
 
     }
 
-
-
     if (checked) {
-
 
         target.status =
             "check";
 
-
         target.checkedTime =
             getCurrentDateTime();
 
-
-
     } else {
-
 
         target.status =
             "none";
-
 
         target.checkedTime =
             "";
 
     }
 
-
-
     saveWorkData();
-
 
     createChecklist();
 
-
     updateProgress();
 
-
 }
-
-
 
 /*
 ====================================================
@@ -684,47 +638,33 @@ function updateStatus(id, checked) {
 ====================================================
 */
 
-
 function getCurrentDateTime() {
-
 
     const now =
         new Date();
 
-
-
     const year =
         now.getFullYear();
-
-
 
     const month =
         String(
             now.getMonth() + 1
         ).padStart(2, "0");
 
-
-
     const day =
         String(
             now.getDate()
         ).padStart(2, "0");
-
-
 
     const hour =
         String(
             now.getHours()
         ).padStart(2, "0");
 
-
-
     const minute =
         String(
             now.getMinutes()
         ).padStart(2, "0");
-
-
 
     return (
 
@@ -740,10 +680,7 @@ function getCurrentDateTime() {
 
     );
 
-
 }
-
-
 
 /*
 ====================================================
@@ -751,14 +688,10 @@ function getCurrentDateTime() {
 ====================================================
 */
 
-
 function updateProgress() {
-
 
     const total =
         workData.length;
-
-
 
     const completed =
         workData.filter(
@@ -768,73 +701,50 @@ function updateProgress() {
 
         ).length;
 
-
-
     const remaining =
         total - completed;
-
-
 
     const completedElement =
         document.getElementById(
             "completedCount"
         );
 
-
     const totalElement =
         document.getElementById(
             "totalCount"
         );
-
 
     const remainingElement =
         document.getElementById(
             "remainingCount"
         );
 
-
-
     if (completedElement) {
-
 
         completedElement.textContent =
             completed;
 
     }
 
-
-
     if (totalElement) {
-
 
         totalElement.textContent =
             total;
 
     }
 
-
-
     if (remainingElement) {
-
 
         remainingElement.textContent =
             remaining;
 
     }
 
-
-
     updateProgressBar();
-
-
 
     updateRemainingNumbers();
 
-
-
 }
-
-
 
 /*
 ====================================================
@@ -842,14 +752,10 @@ function updateProgress() {
 ====================================================
 */
 
-
 function updateProgressBar() {
-
 
     const total =
         workData.length;
-
-
 
     const completed =
         workData.filter(
@@ -859,14 +765,9 @@ function updateProgressBar() {
 
         ).length;
 
-
-
     let percent = 0;
 
-
-
     if (total > 0) {
-
 
         percent =
             Math.round(
@@ -881,28 +782,19 @@ function updateProgressBar() {
 
     }
 
-
-
     const bar =
         document.getElementById(
             "progressValue"
         );
 
-
-
     if (bar) {
-
 
         bar.style.width =
             percent + "%";
 
     }
 
-
-
 }
-
-
 
 /*
 ====================================================
@@ -910,24 +802,18 @@ function updateProgressBar() {
 ====================================================
 */
 
-
 function updateRemainingNumbers() {
-
 
     const area =
         document.getElementById(
             "remainingNumbers"
         );
 
-
-
     if (!area) {
 
         return;
 
     }
-
-
 
     const remainingItems =
         workData.filter(
@@ -937,23 +823,16 @@ function updateRemainingNumbers() {
 
         );
 
-
-
     if (
         remainingItems.length === 0
     ) {
 
-
         area.textContent =
             "すべて完了しました";
 
-
         return;
 
-
     }
-
-
 
     area.textContent =
         remainingItems
@@ -969,10 +848,7 @@ function updateRemainingNumbers() {
                 "　"
             );
 
-
 }
-
-
 
 /*
 ====================================================
@@ -980,9 +856,7 @@ function updateRemainingNumbers() {
 ====================================================
 */
 
-
 function updateRowColor(row, status) {
-
 
     row.classList.remove(
 
@@ -994,45 +868,31 @@ function updateRowColor(row, status) {
 
     );
 
-
-
     if (status === "none") {
-
 
         row.classList.add(
             "row-none"
         );
 
-
     }
 
-
     else if (status === "check") {
-
 
         row.classList.add(
             "row-check"
         );
 
-
     }
 
-
     else if (status === "photo") {
-
 
         row.classList.add(
             "row-photo"
         );
 
-
     }
 
-
-
 }
-
-
 
 /*
 ====================================================
@@ -1040,19 +900,14 @@ function updateRowColor(row, status) {
 ====================================================
 */
 
-
 function setupButtons() {
-
 
     const resetButton =
         document.getElementById(
             "resetButton"
         );
 
-
-
     if (resetButton) {
-
 
         resetButton.addEventListener(
 
@@ -1062,20 +917,14 @@ function setupButtons() {
 
         );
 
-
     }
-
-
 
     const saveButton =
         document.getElementById(
             "saveButton"
         );
 
-
-
     if (saveButton) {
-
 
         saveButton.addEventListener(
 
@@ -1083,27 +932,19 @@ function setupButtons() {
 
             () => {
 
-
                 saveWorkData();
-
-
 
                 alert(
                     "保存しました"
                 );
 
-
             }
 
         );
 
-
     }
 
-
 }
-
-
 
 /*
 ====================================================
@@ -1111,9 +952,7 @@ function setupButtons() {
 ====================================================
 */
 
-
 function resetAllData() {
-
 
     const result =
         confirm(
@@ -1122,45 +961,31 @@ function resetAllData() {
 
         );
 
-
-
     if (!result) {
-
 
         return;
 
     }
 
-
-
     workData.forEach(
 
         item => {
 
-
             item.status =
                 "none";
 
-
             item.checkedTime =
                 "";
-
 
         }
 
     );
 
-
-
     saveWorkData();
-
 
     createChecklist();
 
-
     updateProgress();
-
-
 
 }
 
@@ -1175,49 +1000,39 @@ function resetAllData() {
 
 function registerServiceWorker() {
 
-
     if (
         "serviceWorker" in navigator
     ) {
-
 
         navigator.serviceWorker.register(
             "service-worker.js"
         )
 
-
         .then(
             registration => {
-
 
                 console.log(
                     "Service Worker登録成功",
                     registration.scope
                 );
 
-
             }
 
         )
 
-
         .catch(
             error => {
-
 
                 console.error(
                     "Service Worker登録失敗",
                     error
                 );
 
-
             }
 
         );
 
-
     }
-
 
 }
 
@@ -1385,13 +1200,9 @@ Commit016
 ====================================================
 */
 
-
 let photoDB;
 
-
-
 function initPhotoDB(callback){
-
 
     const request =
         indexedDB.open(
@@ -1399,16 +1210,11 @@ function initPhotoDB(callback){
             1
         );
 
-
-
     request.onupgradeneeded =
         (event)=>{
 
-
             const db =
                 event.target.result;
-
-
 
             if(
                 !db.objectStoreNames.contains(
@@ -1425,23 +1231,17 @@ function initPhotoDB(callback){
 
             }
 
-
         };
 
     request.onsuccess =
         (event)=>{
 
-
             photoDB =
                 event.target.result;
-
-
 
             console.log(
                 "写真DB準備完了"
             );
-
-
 
             if(callback){
 
@@ -1449,21 +1249,16 @@ function initPhotoDB(callback){
 
             }
 
-
         };
-
 
     request.onerror =
         ()=>{
-
 
             console.error(
                 "写真DBエラー"
             );
 
-
         };
-
 
 }
 
@@ -1477,9 +1272,7 @@ Commit017
 ====================================================
 */
 
-
 function savePhoto(id, file){
-
 
     if(!photoDB){
 
@@ -1491,8 +1284,6 @@ function savePhoto(id, file){
 
     }
 
-
-
     const transaction =
         photoDB.transaction(
             [
@@ -1501,14 +1292,10 @@ function savePhoto(id, file){
             "readwrite"
         );
 
-
-
     const store =
         transaction.objectStore(
             "photos"
         );
-
-
 
     store.put({
 
@@ -1520,20 +1307,15 @@ function savePhoto(id, file){
 
     });
 
-
-
     transaction.oncomplete =
         ()=>{
-
 
             console.log(
                 "写真保存完了:",
                 id
             );
 
-
         };
-
 
 }
 
@@ -1547,17 +1329,13 @@ Commit018
 ====================================================
 */
 
-
 function restorePhotos(){
-
 
     if(!photoDB){
 
         return;
 
     }
-
-
 
     const transaction =
         photoDB.transaction(
@@ -1567,31 +1345,21 @@ function restorePhotos(){
             "readonly"
         );
 
-
-
     const store =
         transaction.objectStore(
             "photos"
         );
 
-
-
     store.openCursor().onsuccess =
         (event)=>{
-
 
             const cursor =
                 event.target.result;
 
-
-
             if(cursor){
-
 
                 const data =
                     cursor.value;
-
-
 
                 const row =
                     document.querySelector(
@@ -1600,27 +1368,20 @@ function restorePhotos(){
 
                     );
 
-
-
                 if(row){
-
 
                     const photoCell =
                         row.children[3];
-
-
 
                     const img =
                         document.createElement(
                             "img"
                         );
 
-
                     img.src =
                         URL.createObjectURL(
                             data.image
                         );
-
 
                     img.className =
                         "photo-preview";
@@ -1643,24 +1404,17 @@ function restorePhotos(){
                     photoCell.innerHTML =
                         "";
 
-
                     photoCell.appendChild(
                         img
                     );
 
-
                 }
-
-
 
                 cursor.continue();
 
-
             }
 
-
         };
-
 
 }
 
@@ -1700,7 +1454,6 @@ function setupPhotoDialog() {
             "deletePhotoButton"
         );
 
-
     if (
         !dialog ||
         !closeButton ||
@@ -1712,7 +1465,6 @@ function setupPhotoDialog() {
 
     }
 
-
     closeButton.addEventListener(
 
         "click",
@@ -1720,7 +1472,6 @@ function setupPhotoDialog() {
         closePhotoDialog
 
     );
-
 
     retakeButton.addEventListener(
 
@@ -1730,7 +1481,6 @@ function setupPhotoDialog() {
 
     );
 
-
     deleteButton.addEventListener(
 
         "click",
@@ -1738,7 +1488,6 @@ function setupPhotoDialog() {
         deleteCurrentPhoto
 
     );
-
 
 }
 
@@ -1895,9 +1644,7 @@ Ver1.0.03
 ====================================================
 */
 
-
 function deleteCurrentPhoto() {
-
 
     if (
         currentDialogPhotoId === null
@@ -1907,8 +1654,6 @@ function deleteCurrentPhoto() {
 
     }
 
-
-
     const result =
         confirm(
 
@@ -1916,27 +1661,20 @@ function deleteCurrentPhoto() {
 
         );
 
-
-
     if (!result) {
 
         return;
 
     }
 
-
-
     const photoId =
         currentDialogPhotoId;
-
-
 
     deletePhoto(
 
         photoId,
 
         () => {
-
 
             const item =
                 workData.find(
@@ -1947,18 +1685,13 @@ function deleteCurrentPhoto() {
 
                 );
 
-
-
             if (item) {
-
 
                 item.photoTime =
                     "";
 
-
                 item.photos =
                     [];
-
 
             }
 
@@ -1983,10 +1716,7 @@ function deleteCurrentPhoto() {
 
     );
 
-
 }
-
-
 
 /*
 ====================================================
@@ -1998,15 +1728,12 @@ Ver1.0.03
 ====================================================
 */
 
-
 function deletePhoto(
     id,
     callback
 ) {
 
-
     if (!photoDB) {
-
 
         console.error(
 
@@ -2014,12 +1741,9 @@ function deletePhoto(
 
         );
 
-
         return;
 
     }
-
-
 
     const transaction =
         photoDB.transaction(
@@ -2033,16 +1757,12 @@ function deletePhoto(
 
         );
 
-
-
     const store =
         transaction.objectStore(
 
             "photos"
 
         );
-
-
 
     const request =
         store.delete(
@@ -2051,11 +1771,8 @@ function deletePhoto(
 
         );
 
-
-
     request.onsuccess =
         () => {
-
 
             console.log(
 
@@ -2065,25 +1782,17 @@ function deletePhoto(
 
             );
 
-
         };
-
-
 
     transaction.oncomplete =
         () => {
 
-
             if (callback) {
-
 
                 callback();
 
-
             }
 
-
         };
-
 
 }

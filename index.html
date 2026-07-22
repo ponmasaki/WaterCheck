@@ -5,36 +5,27 @@
 
     <meta charset="UTF-8">
 
-
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-
     <title>WaterCheck</title>
-
 
     <!-- PWA設定 -->
 
     <link rel="manifest" href="manifest.json">
 
-
     <meta name="theme-color"
           content="#121212">
-
 
     <!-- CSS -->
 
     <link rel="stylesheet" href="style.css">
 
-
 </head>
-
 
 <body>
 
-
 <div id="app">
-
 
     <!-- ================================
          ヘッダー
@@ -42,22 +33,15 @@
 
     <header id="header">
 
-
         <h1 id="appTitle">
             WaterCheck
         </h1>
-
 
         <p id="appSubTitle">
             Ver.1.0.0
         </p>
 
-
     </header>
-
-
-
-
 
     <!-- ================================
          進捗表示
@@ -65,9 +49,7 @@
 
     <section id="progressArea">
 
-
         <div id="progressText">
-
 
             <span id="completedCount">
                 0
@@ -81,33 +63,21 @@
 
             完了
 
-
         </div>
-
-
-
 
         <div id="progressBarArea">
 
-
             <div id="progressBar">
-
 
                 <div id="progressValue">
 
                 </div>
 
-
             </div>
-
 
         </div>
 
-
-
-
         <div id="remainingArea">
-
 
             残り：
 
@@ -117,26 +87,13 @@
 
             件
 
-
         </div>
-
-
-
 
         <div id="remainingNumbers">
 
-
         </div>
 
-
-
     </section>
-
-
-
-
-
-
 
     <!-- ================================
          メイン一覧
@@ -144,77 +101,51 @@
 
     <main id="mainArea">
 
-
-
         <table id="checkTable">
-
 
             <thead>
 
-
                 <tr>
-
 
                     <th class="colNo">
                         No
                     </th>
 
-
                     <th class="colPlace">
                         場所
                     </th>
-
 
                     <th class="colStatus">
                         状態
                     </th>
 
-
                     <th class="colPhoto">
                         写真
                     </th>
-
 
                     <th class="colCheckTime">
                         チェック時刻
                     </th>
 
-
                     <th class="colPhotoTime">
                         写真時刻
                     </th>
-
 
                     <th class="colMemo">
                         メモ
                     </th>
 
-
                 </tr>
-
 
             </thead>
 
-
-
             <tbody id="checkTableBody">
-
 
             </tbody>
 
-
-
         </table>
 
-
-
     </main>
-
-
-
-
-
-
 
     <!-- ================================
          操作ボタン
@@ -222,14 +153,11 @@
 
     <footer id="footer">
 
-
         <button id="saveButton">
 
             保存
 
         </button>
-
-
 
         <button id="resetButton">
 
@@ -237,18 +165,9 @@
 
         </button>
 
-
-
     </footer>
 
-
-
-
 </div>
-
-
-
-
 
 <!-- ================================
      JavaScript読み込み
@@ -261,12 +180,9 @@
 
 ================================= -->
 
-
 <script src="data.js"></script>
 
-
 <script src="app.js"></script>
-
 
 <!--
 ====================================================
@@ -278,7 +194,6 @@ Androidカメラ呼び出し
 ====================================================
 -->
 
-
 <input
     type="file"
     id="cameraInput"
@@ -286,8 +201,6 @@ Androidカメラ呼び出し
     capture="environment"
     style="display:none;"
 >
-
-
 
 <!--
 ====================================================
@@ -322,14 +235,12 @@ Ver1.0.03
 
         </button>
 
-
         <!-- 写真 -->
 
         <div
             id="photoPreviewArea"
         >
         </div>
-
 
         <!-- 下部ボタン -->
 
@@ -345,7 +256,6 @@ Ver1.0.03
 
             </button>
 
-
             <button
                 id="retakePhotoButton"
             >
@@ -354,14 +264,11 @@ Ver1.0.03
 
             </button>
 
-
         </div>
-
 
     </div>
 
 </div>
 </body>
-
 
 </html>

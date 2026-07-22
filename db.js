@@ -12,7 +12,6 @@
  ファイル：
  db.js
 
-
  役割：
 
  ・写真保存領域作成
@@ -23,10 +22,7 @@
 ====================================================
 */
 
-
 "use strict";
-
-
 
 /*
 ====================================================
@@ -34,21 +30,14 @@
 ====================================================
 */
 
-
 const DB_NAME =
     "WaterCheckDB";
-
 
 const DB_VERSION =
     1;
 
-
 const PHOTO_STORE =
     "photos";
-
-
-
-
 
 /*
 ====================================================
@@ -59,14 +48,11 @@ const PHOTO_STORE =
 ====================================================
 */
 
-
 function openDatabase() {
-
 
     return new Promise(
 
         (resolve, reject) => {
-
 
             const request =
                 indexedDB.open(
@@ -77,28 +63,21 @@ function openDatabase() {
 
                 );
 
-
-
             /*
             初回作成時
             */
 
-
             request.onupgradeneeded =
                 event => {
 
-
                     const db =
                         event.target.result;
-
-
 
                     if (
                         !db.objectStoreNames.contains(
                             PHOTO_STORE
                         )
                     ) {
-
 
                         const store =
                             db.createObjectStore(
@@ -116,8 +95,6 @@ function openDatabase() {
 
                             );
 
-
-
                         store.createIndex(
 
                             "itemId",
@@ -130,19 +107,12 @@ function openDatabase() {
 
                         );
 
-
                     }
-
 
                 };
 
-
-
-
-
             request.onsuccess =
                 event => {
-
 
                     resolve(
 
@@ -150,16 +120,10 @@ function openDatabase() {
 
                     );
 
-
                 };
-
-
-
-
 
             request.onerror =
                 event => {
-
 
                     reject(
 
@@ -167,23 +131,13 @@ function openDatabase() {
 
                     );
 
-
                 };
-
-
 
         }
 
     );
 
-
 }
-
-
-
-
-
-
 
 /*
 ====================================================
@@ -192,17 +146,14 @@ function openDatabase() {
  itemId:
  水抜き項目ID
 
-
  image:
  Blob画像
-
 
  timestamp:
  撮影日時
 
 ====================================================
 */
-
 
 async function savePhoto(
 
@@ -214,16 +165,12 @@ async function savePhoto(
 
 ) {
 
-
     const db =
         await openDatabase();
-
-
 
     return new Promise(
 
         (resolve, reject) => {
-
 
             const transaction =
                 db.transaction(
@@ -234,16 +181,12 @@ async function savePhoto(
 
                 );
 
-
-
             const store =
                 transaction.objectStore(
 
                     PHOTO_STORE
 
                 );
-
-
 
             const request =
                 store.add(
@@ -260,11 +203,8 @@ async function savePhoto(
 
                 );
 
-
-
             request.onsuccess =
                 event => {
-
 
                     resolve(
 
@@ -272,14 +212,10 @@ async function savePhoto(
 
                     );
 
-
                 };
-
-
 
             request.onerror =
                 event => {
-
 
                     reject(
 
@@ -287,23 +223,13 @@ async function savePhoto(
 
                     );
 
-
                 };
-
 
         }
 
     );
 
-
 }
-
-
-
-
-
-
-
 
 /*
 ====================================================
@@ -314,23 +240,18 @@ async function savePhoto(
 ====================================================
 */
 
-
 async function getPhotosByItemId(
 
     itemId
 
 ) {
 
-
     const db =
         await openDatabase();
-
-
 
     return new Promise(
 
         (resolve,reject)=>{
-
 
             const transaction =
                 db.transaction(
@@ -341,16 +262,12 @@ async function getPhotosByItemId(
 
                 );
 
-
-
             const store =
                 transaction.objectStore(
 
                     PHOTO_STORE
 
                 );
-
-
 
             const index =
                 store.index(
@@ -359,8 +276,6 @@ async function getPhotosByItemId(
 
                 );
 
-
-
             const request =
                 index.getAll(
 
@@ -368,11 +283,8 @@ async function getPhotosByItemId(
 
                 );
 
-
-
             request.onsuccess =
                 event => {
-
 
                     resolve(
 
@@ -380,14 +292,10 @@ async function getPhotosByItemId(
 
                     );
 
-
                 };
-
-
 
             request.onerror =
                 event => {
-
 
                     reject(
 
@@ -395,23 +303,13 @@ async function getPhotosByItemId(
 
                     );
 
-
                 };
-
 
         }
 
     );
 
-
 }
-
-
-
-
-
-
-
 
 /*
 ====================================================
@@ -420,23 +318,18 @@ async function getPhotosByItemId(
 ====================================================
 */
 
-
 async function deletePhoto(
 
     id
 
 ) {
 
-
     const db =
         await openDatabase();
-
-
 
     return new Promise(
 
         (resolve,reject)=>{
-
 
             const transaction =
                 db.transaction(
@@ -447,16 +340,12 @@ async function deletePhoto(
 
                 );
 
-
-
             const store =
                 transaction.objectStore(
 
                     PHOTO_STORE
 
                 );
-
-
 
             const request =
                 store.delete(
@@ -465,22 +354,15 @@ async function deletePhoto(
 
                 );
 
-
-
             request.onsuccess =
                 () => {
 
-
                     resolve();
-
 
                 };
 
-
-
             request.onerror =
                 event => {
-
 
                     reject(
 
@@ -488,13 +370,10 @@ async function deletePhoto(
 
                     );
 
-
                 };
-
 
         }
 
     );
-
 
 }

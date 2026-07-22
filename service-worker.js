@@ -14,10 +14,8 @@ Commit010
 ====================================================
 */
 
-
 // キャッシュ名
 const CACHE_NAME = "watercheck-cache-v1";
-
 
 // オフライン時に必要なファイル一覧
 const CACHE_FILES = [
@@ -40,8 +38,6 @@ const CACHE_FILES = [
 
 ];
 
-
-
 /*
 ====================================================
  Install
@@ -53,11 +49,9 @@ const CACHE_FILES = [
 ====================================================
 */
 
-
 self.addEventListener(
     "install",
     event => {
-
 
         event.waitUntil(
 
@@ -68,11 +62,9 @@ self.addEventListener(
             .then(
                 cache => {
 
-
                     return cache.addAll(
                         CACHE_FILES
                     );
-
 
                 }
 
@@ -80,14 +72,9 @@ self.addEventListener(
 
         );
 
-
     }
 
 );
-
-
-
-
 
 /*
 ====================================================
@@ -98,27 +85,22 @@ self.addEventListener(
 ====================================================
 */
 
-
 self.addEventListener(
     "activate",
     event => {
 
-
         event.waitUntil(
-
 
             caches.keys()
 
             .then(
                 cacheNames => {
 
-
                     return Promise.all(
 
                         cacheNames.map(
 
                             cacheName => {
-
 
                                 if(
 
@@ -132,29 +114,21 @@ self.addEventListener(
 
                                 }
 
-
                             }
 
                         )
 
                     );
 
-
                 }
 
             )
 
-
         );
-
 
     }
 
 );
-
-
-
-
 
 /*
 ====================================================
@@ -167,14 +141,11 @@ self.addEventListener(
 ====================================================
 */
 
-
 self.addEventListener(
     "fetch",
     event => {
 
-
         event.respondWith(
-
 
             caches.match(
 
@@ -186,21 +157,17 @@ self.addEventListener(
 
                 response => {
 
-
                     return response || fetch(
 
                         event.request
 
                     );
 
-
                 }
 
             )
 
-
         );
-
 
     }
 
