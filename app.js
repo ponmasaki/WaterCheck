@@ -243,7 +243,8 @@ function createCell(
 ====================================================
 メモセル作成
 
-Ver1.0.04
+Ver1.0.06
+複数行メモ対応
 
 ====================================================
 */
@@ -255,37 +256,56 @@ function createMemoCell(item) {
             "td"
         );
 
-    const input =
+    const textarea =
         document.createElement(
-            "input"
+            "textarea"
         );
 
-    input.type =
-        "text";
-
-    input.value =
+    textarea.value =
         item.memo || "";
 
-    input.className =
+    textarea.className =
         "memo-input";
 
-    input.addEventListener(
+    textarea.rows = 2;
+
+    const resizeTextarea =
+        () => {
+
+            textarea.style.height =
+                "auto";
+
+            textarea.style.height =
+                textarea.scrollHeight +
+                "px";
+
+        };
+
+    resizeTextarea();
+
+    requestAnimationFrame(
+        resizeTextarea
+    );
+
+    textarea.addEventListener(
 
         "input",
 
         () => {
 
             item.memo =
-                input.value;
+                textarea.value;
 
             saveWorkData();
+
+            resizeTextarea();
 
         }
 
     );
 
     cell.appendChild(
-        input
+        textarea
     );
 
     return cell;
