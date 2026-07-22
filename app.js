@@ -241,6 +241,59 @@ function createCell(
 
 /*
 ====================================================
+メモセル作成
+
+Ver1.0.04
+
+====================================================
+*/
+
+function createMemoCell(item) {
+
+    const cell =
+        document.createElement(
+            "td"
+        );
+
+    const input =
+        document.createElement(
+            "input"
+        );
+
+    input.type =
+        "text";
+
+    input.value =
+        item.memo || "";
+
+    input.className =
+        "memo-input";
+
+    input.addEventListener(
+
+        "input",
+
+        () => {
+
+            item.memo =
+                input.value;
+
+            saveWorkData();
+
+        }
+
+    );
+
+    cell.appendChild(
+        input
+    );
+
+    return cell;
+
+}
+
+/*
+====================================================
 状態セル作成
 ====================================================
 */
@@ -563,8 +616,8 @@ function createChecklist() {
                 */
 
                 row.appendChild(
-                    createCell(
-                        item.memo || ""
+                    createMemoCell(
+                        item
                     )
                 );
 

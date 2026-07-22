@@ -1216,3 +1216,37 @@ Ver1.0.02
     padding: 16px;
 
 }
+
+/*
+====================================================
+メモ入力
+
+Ver1.0.04
+====================================================
+*/
+
+.memo-input {
+
+    width: 100%;
+
+    background: transparent;
+
+    color: #ffffff;
+
+    border: 1px solid #666;
+
+    border-radius: 4px;
+
+    padding: 4px 6px;
+
+    font-size: 14px;
+
+}
+
+.memo-input:focus {
+
+    outline: none;
+
+    border-color: #4da3ff;
+
+}
