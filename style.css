@@ -350,11 +350,9 @@ body {
 
     display: flex;
 
-    justify-content: center;
+    gap: 8px;
 
-    gap: 16px;
-
-    padding: 16px;
+    padding: 8px;
 
     background-color: #1f1f1f;
 
@@ -393,6 +391,24 @@ button {
     color: #ffffff;
 
     touch-action: manipulation;
+
+}
+
+/*
+====================================================
+ フッターボタン
+====================================================
+*/
+
+#footer button {
+
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 10px 6px;
+
+    font-size: 14px;
 
 }
 
@@ -1258,5 +1274,1226 @@ Ver1.0.06
     outline: none;
 
     border-color: #4da3ff;
+
+}
+
+/*
+====================================================
+フッターボタン色
+
+Ver1.0.07
+====================================================
+*/
+
+/* 保存 */
+
+#saveButton {
+
+    background-color: #4CAF50;
+
+    color: #ffffff;
+
+}
+
+#saveButton:hover {
+
+    background-color: #43A047;
+
+}
+
+/* バックアップ */
+
+#backupButton {
+
+    background-color: #1976D2;
+
+    color: #ffffff;
+
+}
+
+#backupButton:hover {
+
+    background-color: #1565C0;
+
+}
+
+/* リセット */
+
+#resetButton {
+
+    background-color: #D32F2F;
+
+    color: #ffffff;
+
+}
+
+#resetButton:hover {
+
+    background-color: #C62828;
+
+}
+
+# /*
+
+WaterCheck
+Ver.1.0.07
+
+バックアップ画面用CSS
+
+・バックアップ一覧
+・バックアップ参照
+・復元確認
+・Androidタッチ操作対応
+
+====================================================
+*/
+
+# /*
+
+# バックアップ共通ダイアログ
+
+*/
+
+.backup-dialog {
+
+```
+position: fixed;
+
+top: 0;
+
+left: 0;
+
+width: 100vw;
+
+height: 100vh;
+
+background:
+    rgba(0, 0, 0, 0.85);
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+z-index: 9000;
+
+padding: 12px;
+```
+
+}
+
+# /*
+
+# バックアップダイアログ本体
+
+*/
+
+.backup-dialog-content {
+
+```
+width: 100%;
+
+max-width: 700px;
+
+max-height: 90vh;
+
+display: flex;
+
+flex-direction: column;
+
+background-color: #1e1e1e;
+
+border: 1px solid #555;
+
+border-radius: 12px;
+
+overflow: hidden;
+```
+
+}
+
+# /*
+
+# ヘッダー
+
+*/
+
+.backup-dialog-header {
+
+```
+display: flex;
+
+align-items: center;
+
+justify-content: space-between;
+
+padding: 14px 16px;
+
+background-color: #292929;
+
+border-bottom: 1px solid #555;
+```
+
+}
+
+.backup-dialog-header h2 {
+
+```
+margin: 0;
+
+font-size: 20px;
+
+color: #ffffff;
+```
+
+}
+
+# /*
+
+# 閉じるボタン
+
+*/
+
+.backup-close-button {
+
+```
+min-width: 48px;
+
+width: 48px;
+
+min-height: 48px;
+
+height: 48px;
+
+padding: 0;
+
+background-color: #555555;
+
+color: #ffffff;
+
+border-radius: 50%;
+
+font-size: 30px;
+
+line-height: 1;
+```
+
+}
+
+.backup-close-button:active {
+
+```
+background-color: #777777;
+```
+
+}
+
+# /*
+
+# バックアップフォルダ情報
+
+*/
+
+.backup-folder-info {
+
+```
+padding: 12px 16px;
+
+background-color: #181818;
+
+border-bottom: 1px solid #444;
+
+color: #cccccc;
+
+font-size: 14px;
+
+line-height: 1.5;
+
+word-break: break-all;
+```
+
+}
+
+# /*
+
+# バックアップ一覧
+
+*/
+
+.backup-list-area {
+
+```
+flex: 1;
+
+min-height: 100px;
+
+max-height: 55vh;
+
+overflow-y: auto;
+
+padding: 10px;
+```
+
+}
+
+# /*
+
+# バックアップ一覧項目
+
+*/
+
+.backup-list-item {
+
+```
+width: 100%;
+
+margin-bottom: 8px;
+
+padding: 12px;
+
+background-color: #292929;
+
+border: 1px solid #555555;
+
+border-radius: 8px;
+
+text-align: left;
+
+color: #ffffff;
+```
+
+}
+
+.backup-list-item:last-child {
+
+```
+margin-bottom: 0;
+```
+
+}
+
+.backup-list-item:active {
+
+```
+background-color: #3a3a3a;
+```
+
+}
+
+.backup-list-item-name {
+
+```
+display: block;
+
+font-size: 16px;
+
+font-weight: bold;
+
+word-break: break-all;
+```
+
+}
+
+.backup-list-item-date {
+
+```
+display: block;
+
+margin-top: 5px;
+
+color: #cccccc;
+
+font-size: 14px;
+```
+
+}
+
+# /*
+
+# バックアップ一覧の操作
+
+*/
+
+.backup-list-item-actions {
+
+```
+display: flex;
+
+gap: 8px;
+
+margin-top: 10px;
+```
+
+}
+
+.backup-list-item-actions button {
+
+```
+flex: 1;
+
+min-width: 0;
+
+min-height: 46px;
+
+font-size: 15px;
+```
+
+}
+
+# /*
+
+# フォルダ選択ボタン
+
+*/
+
+.backup-folder-button {
+
+```
+background-color: #1976D2;
+
+color: #ffffff;
+```
+
+}
+
+.backup-folder-button:active {
+
+```
+background-color: #0D47A1;
+```
+
+}
+
+# /*
+
+# 閲覧ボタン
+
+*/
+
+.backup-view-button {
+
+```
+background-color: #388E3C;
+
+color: #ffffff;
+```
+
+}
+
+.backup-view-button:active {
+
+```
+background-color: #1B5E20;
+```
+
+}
+
+# /*
+
+復元ボタン
+
+灰色＋白文字を避ける。
+
+明るい背景＋濃い文字にして
+現在データを上書きする操作であることを
+明確にする。
+
+====================================================
+*/
+
+.backup-restore-button {
+
+```
+background-color: #FFB300;
+
+color: #1a1a1a;
+
+border: 1px solid #FFD54F;
+
+font-weight: bold;
+```
+
+}
+
+.backup-restore-button:hover {
+
+```
+background-color: #FFC107;
+```
+
+}
+
+.backup-restore-button:active {
+
+```
+background-color: #FF8F00;
+
+transform: scale(0.98);
+```
+
+}
+
+# /*
+
+# 通常の閉じる・キャンセル
+
+*/
+
+.backup-secondary-button {
+
+```
+background-color: #eeeeee;
+
+color: #222222;
+
+border: 1px solid #bbbbbb;
+```
+
+}
+
+.backup-secondary-button:active {
+
+```
+background-color: #cccccc;
+```
+
+}
+
+# /*
+
+# ダイアログ下部
+
+*/
+
+.backup-dialog-footer {
+
+```
+display: flex;
+
+flex-wrap: wrap;
+
+justify-content: center;
+
+gap: 10px;
+
+padding: 14px;
+
+background-color: #292929;
+
+border-top: 1px solid #555;
+```
+
+}
+
+.backup-dialog-footer button {
+
+```
+min-width: 150px;
+```
+
+}
+
+# /*
+
+# バックアップ参照情報
+
+*/
+
+.backup-view-info {
+
+```
+padding: 12px 16px;
+
+background-color: #181818;
+
+border-bottom: 1px solid #444;
+
+color: #dddddd;
+
+font-size: 14px;
+
+line-height: 1.6;
+```
+
+}
+
+# /*
+
+# バックアップ参照エリア
+
+*/
+
+.backup-view-area {
+
+```
+flex: 1;
+
+overflow-y: auto;
+
+padding: 12px;
+```
+
+}
+
+# /*
+
+# バックアップ参照項目
+
+*/
+
+.backup-view-item {
+
+```
+margin-bottom: 10px;
+
+padding: 12px;
+
+background-color: #292929;
+
+border: 1px solid #555;
+
+border-radius: 8px;
+```
+
+}
+
+.backup-view-item:last-child {
+
+```
+margin-bottom: 0;
+```
+
+}
+
+.backup-view-item-title {
+
+```
+font-weight: bold;
+
+font-size: 16px;
+
+margin-bottom: 6px;
+```
+
+}
+
+.backup-view-item-status {
+
+```
+font-size: 14px;
+
+margin-bottom: 5px;
+```
+
+}
+
+.backup-view-item-time {
+
+```
+color: #cccccc;
+
+font-size: 13px;
+```
+
+}
+
+.backup-view-item-memo {
+
+```
+margin-top: 8px;
+
+padding: 8px;
+
+background-color: #202020;
+
+border-radius: 5px;
+
+white-space: pre-wrap;
+
+word-break: break-word;
+
+color: #eeeeee;
+```
+
+}
+
+# /*
+
+# 復元確認画面
+
+*/
+
+.backup-confirm-content {
+
+```
+width: 100%;
+
+max-width: 520px;
+
+padding: 24px;
+
+background-color: #1e1e1e;
+
+border: 1px solid #666;
+
+border-radius: 12px;
+```
+
+}
+
+.backup-confirm-content h2 {
+
+```
+margin-top: 0;
+
+margin-bottom: 18px;
+
+font-size: 22px;
+```
+
+}
+
+.backup-confirm-content p {
+
+```
+margin: 10px 0;
+
+line-height: 1.7;
+```
+
+}
+
+# /*
+
+# 復元警告
+
+*/
+
+.backup-warning {
+
+```
+padding: 12px;
+
+background-color: #4a3010;
+
+border: 1px solid #FFB300;
+
+border-radius: 6px;
+
+color: #FFD54F;
+
+font-weight: bold;
+```
+
+}
+
+# /*
+
+# 復元確認ボタン
+
+*/
+
+.backup-confirm-footer {
+
+```
+display: flex;
+
+justify-content: center;
+
+gap: 12px;
+
+margin-top: 22px;
+```
+
+}
+
+.backup-confirm-footer button {
+
+```
+flex: 1;
+
+min-width: 0;
+```
+
+}
+
+# /*
+
+# バックアップなし
+
+*/
+
+.backup-empty {
+
+```
+padding: 30px 15px;
+
+text-align: center;
+
+color: #cccccc;
+```
+
+}
+
+# /*
+
+# スマートフォン対応
+
+*/
+
+@media screen and (max-width: 600px) {
+
+```
+.backup-dialog {
+
+    padding: 6px;
+
+}
+
+
+.backup-dialog-content {
+
+    max-height: 94vh;
+
+    border-radius: 8px;
+
+}
+
+
+.backup-dialog-header {
+
+    padding: 10px 12px;
+
+}
+
+
+.backup-dialog-header h2 {
+
+    margin: 0;
+
+    font-size: 20px;
+
+    color: #ffffff;
+
+}
+
+
+.backup-list-area {
+
+    max-height: 60vh;
+
+}
+
+
+.backup-list-item-actions {
+
+    flex-direction: column;
+
+}
+
+
+.backup-list-item-actions button {
+
+    width: 100%;
+
+}
+
+
+.backup-dialog-footer {
+
+    padding: 10px;
+
+}
+
+
+.backup-dialog-footer button {
+
+    width: 100%;
+
+    min-width: 0;
+
+}
+
+
+.backup-confirm-content {
+
+    padding: 20px;
+
+}
+
+
+.backup-confirm-footer {
+
+    flex-direction: column-reverse;
+
+}
+
+
+.backup-confirm-footer button {
+
+    width: 100%;
+
+    min-height: 54px;
+
+}
+```
+
+}
+
+/*
+====================================================
+ 復元ボタン
+
+ Ver1.0.08
+====================================================
+*/
+
+#restoreButton {
+
+    background-color: #8E44AD;
+
+    color: #ffffff;
+
+}
+
+#restoreButton:hover {
+
+    background-color: #7D3C98;
+
+}
+
+#restoreButton:active {
+
+    background-color: #6C3483;
+
+}
+
+/*
+====================================================
+ バックアップダイアログ
+
+ Ver1.0.09
+
+====================================================
+*/
+
+.backup-dialog {
+
+    display: none;
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    background-color: rgba(0,0,0,0.75);
+
+    z-index: 9999;
+
+    justify-content: center;
+
+    align-items: center;
+
+}
+
+
+/*
+====================================================
+ バックアップダイアログ本体
+====================================================
+*/
+
+.backup-dialog-content {
+
+    width: 90%;
+
+    max-width: 420px;
+
+    max-height: 80vh;
+
+    overflow-y: auto;
+
+    background-color: #222;
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    color: white;
+
+}
+
+
+/*
+====================================================
+ ヘッダー
+====================================================
+*/
+
+.backup-dialog-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 12px 16px;
+
+    background-color: #263238;
+
+    border-bottom: 1px solid #555;
+
+}
+
+
+/*
+====================================================
+ 閉じるボタン
+====================================================
+*/
+
+.backup-close-button {
+
+    width: 36px;
+
+    height: 36px;
+
+    min-width: 36px;
+
+    min-height: 36px;
+
+    padding: 0;
+
+    border-radius: 50%;
+
+    background-color: #455a64;
+
+    color: #ffffff;
+
+    font-size: 22px;
+
+    font-weight: normal;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+/*
+====================================================
+ 情報表示
+====================================================
+*/
+
+.backup-view-info {
+
+    margin-top: 20px;
+
+    line-height: 1.8;
+
+}
+
+
+/*
+====================================================
+ 下部ボタン
+====================================================
+*/
+
+.backup-dialog-footer {
+
+    margin-top: 25px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+}
+
+
+/*
+====================================================
+ 復元ボタン
+====================================================
+*/
+
+.backup-restore-button {
+
+    background-color: #1976d2;
+
+}
+
+
+/*
+====================================================
+ 補助ボタン
+====================================================
+*/
+
+.backup-secondary-button {
+
+    background-color: #555;
+
+}
+
+/*
+====================================================
+ バックアップ閉じるボタン改善
+
+ Ver1.0.09
+
+====================================================
+*/
+
+.backup-close-button {
+
+    width: 36px;
+
+    height: 36px;
+
+    min-width: 36px;
+
+    min-height: 36px;
+
+    padding: 0;
+
+    border-radius: 50%;
+
+    background-color: #455a64;
+
+    color: #ffffff;
+
+    font-size: 22px;
+
+    font-weight: normal;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+/*
+====================================================
+バックアップ一覧表示
+Ver.1.0.08
+列位置固定
+====================================================
+*/
+
+.backup-item {
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 10px 12px;
+
+    border-bottom: 1px solid #333;
+
+}
+
+
+.backup-item-no {
+
+    width: 55px;
+
+    flex-shrink: 0;
+
+}
+
+
+.backup-item-status {
+
+    width: 90px;
+
+    flex-shrink: 0;
+
+}
+
+
+.status-text {
+
+    display: inline-block;
+
+    width: 90px;
+
+}
+
+
+.backup-item-name {
+
+    flex: 1;
+
+    padding-left: 10px;
+
+}
+
+.backup-item:last-child {
+
+    border-bottom: none;
+
+}
+
+.backup-item-name {
+
+    flex: 1;
+
+    padding-left: 8px;
+
+}
+
+
+
+/*
+====================================================
+ バックアップ選択ボタン
+ Ver.1.0.08
+====================================================
+*/
+
+.backup-main-button {
+
+    width: 100%;
+
+    margin-top: 12px;
+
+    background-color: #1976d2;
+
+    color: #ffffff;
+
+}
+
+
+.backup-main-button:hover {
+
+    background-color: #1565c0;
+
+}
+
+
+.backup-restore-button {
+
+    width: 100%;
+
+    margin-top: 12px;
+
+    background-color: #2e7d32;
+
+    color: #ffffff;
 
 }

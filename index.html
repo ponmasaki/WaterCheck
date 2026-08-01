@@ -1,25 +1,28 @@
 <!DOCTYPE html>
+
 <html lang="ja">
 
 <head>
 
-    <meta charset="UTF-8">
+```
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <title>WaterCheck</title>
+<title>WaterCheck</title>
 
-    <!-- PWA設定 -->
+<!-- PWA設定 -->
 
-    <link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json">
 
-    <meta name="theme-color"
-          content="#121212">
+<meta name="theme-color"
+      content="#121212">
 
-    <!-- CSS -->
+<!-- CSS -->
 
-    <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
+```
 
 </head>
 
@@ -27,193 +30,194 @@
 
 <div id="app">
 
-    <!-- ================================
-         ヘッダー
-    ================================= -->
+```
+<!-- ================================
+     ヘッダー
+================================= -->
 
-    <header id="header">
+<header id="header">
 
-        <h1 id="appTitle">
-            WaterCheck
-        </h1>
+    <h1 id="appTitle">
+        WaterCheck
+    </h1>
 
-        <p id="appSubTitle">
-            Ver.1.0.0
-        </p>
+    <p id="appSubTitle">
+        Ver.1.0.07
+    </p>
 
-    </header>
+</header>
 
-    <!-- ================================
-         進捗表示
-    ================================= -->
+<!-- ================================
+     進捗表示
+================================= -->
 
-    <section id="progressArea">
+<section id="progressArea">
 
-        <div id="progressText">
+    <div id="progressText">
 
-            <span id="completedCount">
-                0
-            </span>
+        <span id="completedCount">
+            0
+        </span>
 
-            /
+        /
 
-            <span id="totalCount">
-                0
-            </span>
+        <span id="totalCount">
+            0
+        </span>
 
-            完了
+        完了
 
-        </div>
+    </div>
 
-        <div id="progressBarArea">
+    <div id="progressBarArea">
 
-            <div id="progressBar">
+        <div id="progressBar">
 
-                <div id="progressValue">
-
-                </div>
+            <div id="progressValue">
 
             </div>
 
         </div>
 
-        <div id="remainingArea">
+    </div>
 
-            残り：
+    <div id="remainingArea">
 
-            <span id="remainingCount">
-                0
-            </span>
+        残り：
 
-            件
+        <span id="remainingCount">
+            0
+        </span>
 
-        </div>
+        件
 
-        <div id="remainingNumbers">
+    </div>
 
-        </div>
+    <div id="remainingNumbers">
 
-    </section>
+    </div>
 
-    <!-- ================================
-         メイン一覧
-    ================================= -->
+</section>
 
-    <main id="mainArea">
+<!-- ================================
+     メイン一覧
+================================= -->
 
-        <table id="checkTable">
+<main id="mainArea">
 
-            <thead>
+    <table id="checkTable">
 
-                <tr>
+        <thead>
 
-                    <th class="colNo">
-                        No
-                    </th>
+            <tr>
 
-                    <th class="colPlace">
-                        場所
-                    </th>
+                <th class="colNo">
+                    No
+                </th>
 
-                    <th class="colStatus">
-                        状態
-                    </th>
+                <th class="colPlace">
+                    場所
+                </th>
 
-                    <th class="colPhoto">
-                        写真
-                    </th>
+                <th class="colStatus">
+                    状態
+                </th>
 
-                    <th class="colCheckTime">
-                        チェック時刻
-                    </th>
+                <th class="colPhoto">
+                    写真
+                </th>
 
-                    <th class="colPhotoTime">
-                        写真時刻
-                    </th>
+                <th class="colCheckTime">
+                    チェック時刻
+                </th>
 
-                    <th class="colMemo">
-                        メモ
-                    </th>
+                <th class="colPhotoTime">
+                    写真時刻
+                </th>
 
-                </tr>
+                <th class="colMemo">
+                    メモ
+                </th>
 
-            </thead>
+            </tr>
 
-            <tbody id="checkTableBody">
+        </thead>
 
-            </tbody>
+        <tbody id="checkTableBody">
 
-        </table>
+        </tbody>
 
-    </main>
+    </table>
 
-    <!-- ================================
-         操作ボタン
-    ================================= -->
+</main>
 
-    <footer id="footer">
+<!-- ================================
+     操作ボタン
+================================= -->
 
-        <button id="saveButton">
+<footer id="footer">
 
-            保存
+    <button id="saveButton">
+        保存
+    </button>
 
-        </button>
+    <button id="backupButton">
+        バックアップ
+    </button>
 
-        <button id="resetButton">
+    <button id="restoreButton">
+        バックアップを開く
+    </button>
 
-            リセット
+    <button id="resetButton">
+        リセット
+    </button>
 
-        </button>
-
-    </footer>
+</footer>
+```
 
 </div>
 
-<!-- ================================
-     JavaScript読み込み
+<!-- ====================================================
+     JavaScript
 
-     順番重要
+     読み込み順重要
 
      data.js
         ↓
      app.js
 
-================================= -->
+==================================================== -->
 
 <script src="data.js"></script>
 
 <script src="app.js"></script>
 
-<!--
-====================================================
+<!-- ====================================================
+     写真撮影用
 
-写真撮影用エリア
-
-Androidカメラ呼び出し
-
-====================================================
--->
+     Androidカメラ呼び出し
+==================================================== -->
 
 <input
-    type="file"
-    id="cameraInput"
-    accept="image/*"
-    capture="environment"
-    style="display:none;"
+type="file"
+id="cameraInput"
+accept="image/*"
+capture="environment"
+style="display:none;"
+
 >
 
-<!--
-====================================================
-写真表示ダイアログ
+<!-- ====================================================
+     写真表示ダイアログ
 
-Ver1.0.03
+     Ver1.0.03
 
-・写真拡大表示
-・写真撮り直し
-・写真削除
+     ・写真拡大表示
+     ・写真撮り直し
+     ・写真削除
 
-====================================================
--->
+==================================================== -->
 
 <div
     id="photoDialog"
@@ -221,54 +225,294 @@ Ver1.0.03
     style="display:none;"
 >
 
-    <div
-        class="photo-dialog-content"
+```
+<div
+    class="photo-dialog-content"
+>
+
+    <!-- 閉じる -->
+
+    <button
+        id="closePhotoDialog"
     >
 
-        <!-- 閉じる -->
+        ×
+
+    </button>
+
+    <!-- 写真 -->
+
+    <div
+        id="photoPreviewArea"
+    >
+    </div>
+
+    <!-- 下部ボタン -->
+
+    <div
+        class="photo-dialog-footer"
+    >
 
         <button
-            id="closePhotoDialog"
+            id="deletePhotoButton"
         >
 
-            ×
+            🗑 削除
 
         </button>
 
-        <!-- 写真 -->
-
-        <div
-            id="photoPreviewArea"
-        >
-        </div>
-
-        <!-- 下部ボタン -->
-
-        <div
-            class="photo-dialog-footer"
+        <button
+            id="retakePhotoButton"
         >
 
-            <button
-                id="deletePhotoButton"
-            >
+            📷 撮り直す
 
-                🗑 削除
-
-            </button>
-
-            <button
-                id="retakePhotoButton"
-            >
-
-                📷 撮り直す
-
-            </button>
-
-        </div>
+        </button>
 
     </div>
 
 </div>
+```
+
+</div>
+
+<!-- ====================================================
+     バックアップ一覧ダイアログ
+
+     Ver.1.0.07
+
+     保存済みバックアップを一覧表示する。
+
+==================================================== -->
+
+<div
+    id="backupListDialog"
+    class="backup-dialog"
+    style="display:none;"
+>
+
+```
+<div
+    class="backup-dialog-content"
+>
+
+    <div class="backup-dialog-header">
+
+        <h2>
+            バックアップ
+        </h2>
+
+        <button
+            id="closeBackupListButton"
+            class="backup-close-button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <!-- 保存先 -->
+
+    <div
+        id="backupFolderInfo"
+        class="backup-folder-info"
+    >
+        バックアップフォルダ：
+        未選択
+    </div>
+
+
+    <!-- バックアップ一覧 -->
+
+    <div
+        id="backupListArea"
+        class="backup-list-area"
+    >
+
+        <p>
+            バックアップを読み込んでいます。
+        </p>
+
+    </div>
+
+
+    <!-- 操作 -->
+
+    <div
+        class="backup-dialog-footer"
+    >
+
+        <button
+            id="closeBackupListButtonBottom"
+            class="backup-secondary-button"
+        >
+            閉じる
+        </button>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+<!-- ====================================================
+     バックアップ閲覧ダイアログ
+
+     Ver.1.0.07
+
+     ・過去データ確認
+     ・現在データは変更しない
+
+==================================================== -->
+
+<div
+    id="backupViewDialog"
+    class="backup-dialog"
+    style="display:none;"
+>
+
+```
+<div
+    class="backup-dialog-content"
+>
+
+    <div class="backup-dialog-header">
+
+        <h2>
+            バックアップ参照
+        </h2>
+
+        <button
+            id="closeBackupViewButton"
+            class="backup-close-button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <!-- バックアップ情報 -->
+
+    <div
+        id="backupViewInfo"
+        class="backup-view-info"
+    >
+    </div>
+
+
+    <!-- 参照データ -->
+
+    <div
+        id="backupViewArea"
+        class="backup-view-area"
+    >
+    </div>
+
+
+    <!-- 操作 -->
+
+    <div
+        class="backup-dialog-footer"
+    >
+
+        <button
+            id="restoreSelectedBackupButton"
+            class="backup-restore-button"
+        >
+            このバックアップを復元
+        </button>
+
+        <button
+            id="closeBackupViewButtonBottom"
+            class="backup-secondary-button"
+        >
+            閉じる
+        </button>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+<!-- ====================================================
+     復元確認ダイアログ
+
+     Ver.1.0.07
+
+     現在データを上書きする前に確認する。
+
+==================================================== -->
+
+<div
+    id="restoreConfirmDialog"
+    class="backup-dialog"
+    style="display:none;"
+>
+
+```
+<div
+    class="backup-confirm-content"
+>
+
+    <h2>
+        バックアップを復元
+    </h2>
+
+    <p>
+        現在のチェックデータを、
+        選択したバックアップの内容で置き換えます。
+    </p>
+
+    <p class="backup-warning">
+        現在のデータは上書きされます。
+        この操作は元に戻せません。
+    </p>
+
+    <div
+        class="backup-confirm-footer"
+    >
+
+        <button
+            id="cancelRestoreButton"
+            class="backup-secondary-button"
+        >
+            キャンセル
+        </button>
+
+        <button
+            id="executeRestoreButton"
+            class="backup-restore-button"
+        >
+            復元する
+        </button>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+<!--
+====================================================
+バックアップファイル選択
+
+Ver1.0.08
+====================================================
+-->
+
+<input
+    type="file"
+    id="restoreInput"
+    accept=".json,application/json"
+    style="display:none;"
+>
+
 </body>
 
 </html>

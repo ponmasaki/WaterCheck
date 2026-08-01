@@ -15,7 +15,7 @@ Commit010
 */
 
 // キャッシュ名
-const CACHE_NAME = "watercheck-cache-v1";
+const CACHE_NAME = "watercheck-cache-v2";
 
 // オフライン時に必要なファイル一覧
 const CACHE_FILES = [
@@ -52,6 +52,8 @@ const CACHE_FILES = [
 self.addEventListener(
     "install",
     event => {
+        
+        self.skipWaiting();
 
         event.waitUntil(
 

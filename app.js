@@ -970,27 +970,24 @@ function updateRowColor(row, status) {
 /*
 ====================================================
  ボタン設定
+
+ Ver1.0.07
+
+ ・保存
+ ・バックアップ
+ ・バックアップを開く
+ ・リセット
+
 ====================================================
 */
 
 function setupButtons() {
 
-    const resetButton =
-        document.getElementById(
-            "resetButton"
-        );
-
-    if (resetButton) {
-
-        resetButton.addEventListener(
-
-            "click",
-
-            resetAllData
-
-        );
-
-    }
+    /*
+    ----------------------------------------
+    保存
+    ----------------------------------------
+    */
 
     const saveButton =
         document.getElementById(
@@ -1014,6 +1011,246 @@ function setupButtons() {
             }
 
         );
+
+    }
+
+    /*
+    ----------------------------------------
+    バックアップ
+    ----------------------------------------
+    */
+
+    const backupButton =
+        document.getElementById(
+            "backupButton"
+        );
+
+    if (backupButton) {
+
+        backupButton.addEventListener(
+
+            "click",
+
+            exportBackup
+
+        );
+
+    }
+
+    /*
+    ----------------------------------------
+    バックアップを開く
+    ----------------------------------------
+    */
+
+    const restoreButton =
+        document.getElementById(
+            "restoreButton"
+        );
+
+    const restoreInput =
+        document.getElementById(
+            "restoreInput"
+        );
+
+    if (
+        restoreButton &&
+        restoreInput
+    ) {
+
+        restoreButton.addEventListener(
+
+            "click",
+
+            () => {
+
+                restoreInput.value = "";
+
+                restoreInput.click();
+
+            }
+
+        );
+
+        restoreInput.addEventListener(
+
+            "change",
+
+            handleRestoreFile
+
+        );
+
+    }
+
+    /*
+    ----------------------------------------
+    バックアップ閲覧ダイアログ
+    Ver1.0.09
+    ----------------------------------------
+    */
+
+
+    const restoreSelectedBackupButton =
+        document.getElementById(
+            "restoreSelectedBackupButton"
+        );
+
+
+    if (
+        restoreSelectedBackupButton
+    ) {
+
+        restoreSelectedBackupButton.addEventListener(
+
+            "click",
+
+            () => {
+
+                if (
+                    selectedBackupData
+                ) {
+
+                    closeBackupViewDialog();
+
+                    confirmRestoreBackup(
+                        selectedBackupData
+                    );
+
+                }
+
+            }
+
+        );
+
+    }
+
+
+
+    const closeBackupViewButton =
+        document.getElementById(
+            "closeBackupViewButton"
+        );
+
+
+    const closeBackupViewButtonBottom =
+        document.getElementById(
+            "closeBackupViewButtonBottom"
+        );
+
+
+    if (
+        closeBackupViewButton
+    ) {
+
+        closeBackupViewButton.addEventListener(
+
+            "click",
+
+            closeBackupViewDialog
+
+        );
+
+    }
+
+
+    if (
+        closeBackupViewButtonBottom
+    ) {
+
+        closeBackupViewButtonBottom.addEventListener(
+
+            "click",
+
+            closeBackupViewDialog
+
+        );
+
+    }
+
+    /*
+    ----------------------------------------
+    リセット
+    ----------------------------------------
+    */
+
+    const resetButton =
+        document.getElementById(
+            "resetButton"
+        );
+
+    if (resetButton) {
+
+        resetButton.addEventListener(
+
+            "click",
+
+            resetAllData
+
+        );
+
+    }
+
+    /*
+    ----------------------------------------
+    バックアップ選択画面 閉じる
+    Ver1.0.08
+    ----------------------------------------
+    */
+
+    const closeBackupListButton =
+        document.getElementById(
+            "closeBackupListButton"
+        );
+
+    const closeBackupListButtonBottom =
+        document.getElementById(
+            "closeBackupListButtonBottom"
+        );
+
+
+    const backupListDialog =
+        document.getElementById(
+            "backupListDialog"
+        );
+
+
+    if (backupListDialog) {
+
+
+        if (closeBackupListButton) {
+
+            closeBackupListButton.addEventListener(
+
+                "click",
+
+                () => {
+
+                    backupListDialog.style.display =
+                        "none";
+
+                }
+
+            );
+
+        }
+
+
+        if (closeBackupListButtonBottom) {
+
+            closeBackupListButtonBottom.addEventListener(
+
+                "click",
+
+                () => {
+
+                    backupListDialog.style.display =
+                        "none";
+
+                }
+
+            );
+
+        }
 
     }
 
@@ -1341,6 +1578,7 @@ function initPhotoDB(callback){
 写真保存
 
 Commit017
+Ver1.0.07
 
 ====================================================
 */
@@ -1357,6 +1595,9 @@ function savePhoto(id, file){
 
     }
 
+    const now =
+        new Date().toISOString();
+
     const transaction =
         photoDB.transaction(
             [
@@ -1372,11 +1613,27 @@ function savePhoto(id, file){
 
     store.put({
 
-        id:id,
+        id: id,
 
-        image:file,
+        type: "photo",
 
-        time:new Date().toISOString()
+        image: file,
+
+        /*
+        撮影日時
+
+        現時点では撮影直後の登録のみなので
+        addedAt と同じ値を保存する。
+
+        将来、端末内の既存写真を追加する際は
+        EXIFの撮影日時を使用する。
+        */
+        capturedAt: now,
+
+        /*
+        WaterCheckへ登録した日時
+        */
+        addedAt: now
 
     });
 
@@ -1867,5 +2124,1466 @@ function deletePhoto(
             }
 
         };
+
+}
+
+/*
+====================================================
+
+バックアップ
+
+Ver1.0.07
+
+====================================================
+*/
+
+function exportBackup() {
+
+    const backupData = {
+
+        app: {
+
+            name: "WaterCheck",
+
+            version: "1.0.07",
+
+            exportedAt:
+                new Date().toISOString()
+
+        },
+
+        workData: workData,
+
+        evidence: []
+
+    };
+
+    const jsonText =
+        JSON.stringify(
+
+            backupData,
+
+            null,
+
+            2
+
+        );
+
+    downloadBackupFile(
+        jsonText
+    );
+
+    alert(
+
+        "バックアップを保存しました。"
+
+    );
+
+}
+
+/*
+====================================================
+
+バックアップダウンロード
+
+Ver1.0.07
+
+====================================================
+*/
+
+function downloadBackupFile(jsonText) {
+
+    const now =
+        new Date();
+
+    const fileName =
+
+        "WaterCheck_"
+
+        +
+
+        now.getFullYear()
+
+        +
+
+        String(
+            now.getMonth() + 1
+        ).padStart(2, "0")
+
+        +
+
+        String(
+            now.getDate()
+        ).padStart(2, "0")
+
+        +
+
+        "_"
+
+        +
+
+        String(
+            now.getHours()
+        ).padStart(2, "0")
+
+        +
+
+        String(
+            now.getMinutes()
+        ).padStart(2, "0")
+
+        +
+
+        String(
+            now.getSeconds()
+        ).padStart(2, "0")
+
+        +
+
+        ".json";
+
+    const blob =
+        new Blob(
+
+            [
+                jsonText
+            ],
+
+            {
+                type:
+                    "application/json"
+            }
+
+        );
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+    link.href =
+        url;
+
+    link.download =
+        fileName;
+
+    document.body.appendChild(
+        link
+    );
+
+    link.click();
+
+    document.body.removeChild(
+        link
+    );
+
+    URL.revokeObjectURL(
+        url
+    );
+
+}
+
+/*
+====================================================
+
+Ver1.0.07
+写真バックアップ
+
+IndexedDBの写真を取得し、
+JSONバックアップ用のEvidenceへ変換する。
+
+====================================================
+*/
+
+/*
+====================================================
+ Blob → Base64変換
+====================================================
+*/
+
+function blobToBase64(blob) {
+
+    return new Promise(
+
+        (resolve, reject) => {
+
+            const reader =
+                new FileReader();
+
+            reader.onload =
+                () => {
+
+                    resolve(
+                        reader.result
+                    );
+
+                };
+
+            reader.onerror =
+                () => {
+
+                    reject(
+                        reader.error
+                    );
+
+                };
+
+            reader.readAsDataURL(
+                blob
+            );
+
+        }
+
+    );
+
+}
+
+/*
+====================================================
+ IndexedDBから全写真取得
+====================================================
+*/
+
+function getAllPhotos() {
+
+    return new Promise(
+
+        (resolve, reject) => {
+
+            if (!photoDB) {
+
+                reject(
+                    new Error(
+                        "写真DB未準備"
+                    )
+                );
+
+                return;
+
+            }
+
+            const transaction =
+                photoDB.transaction(
+
+                    [
+                        "photos"
+                    ],
+
+                    "readonly"
+
+                );
+
+            const store =
+                transaction.objectStore(
+                    "photos"
+                );
+
+            const request =
+                store.getAll();
+
+            request.onsuccess =
+                () => {
+
+                    resolve(
+                        request.result
+                    );
+
+                };
+
+            request.onerror =
+                () => {
+
+                    reject(
+                        request.error
+                    );
+
+                };
+
+        }
+
+    );
+
+}
+
+/*
+====================================================
+ Evidence生成
+====================================================
+*/
+
+async function createEvidenceBackup() {
+
+    const photos =
+        await getAllPhotos();
+
+    const evidence = [];
+
+    for (
+        const photo of photos
+    ) {
+
+        /*
+        ----------------------------------------
+        対応するチェック項目を検索
+        ----------------------------------------
+        */
+
+        const item =
+            workData.find(
+
+                data =>
+                    data.id === photo.id
+
+            );
+
+        if (!item) {
+
+            console.warn(
+
+                "対応するチェック項目がありません:",
+
+                photo.id
+
+            );
+
+            continue;
+
+        }
+
+        /*
+        ----------------------------------------
+        写真データをBase64へ変換
+        ----------------------------------------
+        */
+
+        const image =
+            await blobToBase64(
+                photo.image
+            );
+
+        /*
+        ----------------------------------------
+        Evidenceとして保存
+        ----------------------------------------
+        */
+
+        evidence.push({
+
+            itemId:
+                item.id,
+
+            itemName:
+                item.name,
+
+            type:
+                "photo",
+
+            capturedAt:
+                photo.capturedAt ||
+                photo.time ||
+                "",
+
+            addedAt:
+                photo.addedAt ||
+                photo.time ||
+                "",
+
+            image:
+                image
+
+        });
+
+    }
+
+    return evidence;
+
+}
+
+/*
+====================================================
+ 写真付きバックアップ
+
+ Ver1.0.07
+====================================================
+*/
+
+async function exportBackup() {
+
+    try {
+
+        /*
+        ----------------------------------------
+        Evidence取得
+        ----------------------------------------
+        */
+
+        const evidence =
+            await createEvidenceBackup();
+
+        /*
+        ----------------------------------------
+        バックアップデータ作成
+        ----------------------------------------
+        */
+
+        const backupData = {
+
+            app: {
+
+                name:
+                    "WaterCheck",
+
+                version:
+                    "1.0.07",
+
+                exportedAt:
+                    new Date().toISOString()
+
+            },
+
+            workData:
+                workData,
+
+            evidence:
+                evidence
+
+        };
+
+        /*
+        ----------------------------------------
+        JSON化
+        ----------------------------------------
+        */
+
+        const jsonText =
+            JSON.stringify(
+
+                backupData,
+
+                null,
+
+                2
+
+            );
+
+        /*
+        ----------------------------------------
+        ファイル保存
+        ----------------------------------------
+        */
+
+        downloadBackupFile(
+            jsonText
+        );
+
+        alert(
+
+            "バックアップを保存しました。\n\n" +
+
+            "写真 " +
+            evidence.length +
+            "件を含みます。"
+
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+
+            "バックアップ作成エラー:",
+
+            error
+
+        );
+
+        alert(
+
+            "バックアップの作成に失敗しました。\n" +
+
+            "写真DBを確認してください。"
+
+        );
+
+    }
+
+}
+
+/*
+====================================================
+
+バックアップファイル読み込み
+
+Ver1.0.07
+
+・JSON形式確認
+・WaterCheck形式確認
+・バックアップ日時確認
+
+====================================================
+*/
+
+function handleRestoreFile(event) {
+
+    console.log(
+        "handleRestoreFile実行"
+    );
+
+    const file =
+        event.target.files[0];
+
+    if (!file) {
+
+        return;
+
+    }
+
+    const reader =
+        new FileReader();
+
+    reader.onload =
+        async () => {
+
+            console.log(
+                "JSON読み込み完了"
+            );
+
+            try {
+
+                const backupData =
+                    JSON.parse(
+                        reader.result
+                    );
+
+
+                console.log(
+                    "JSON解析成功",
+                    backupData
+                );
+
+
+                await openBackupData(
+                    backupData
+                );
+
+
+                console.log(
+                    "openBackupData完了"
+                );
+
+
+            }
+            catch (error) {
+
+                console.error(
+                    "バックアップ読み込みエラー:",
+                    error
+                );
+
+                alert(
+                    "バックアップファイルを読み込めませんでした。"
+                );
+
+            }
+
+
+            event.target.value = "";
+
+        };
+
+    reader.onerror =
+        () => {
+
+            alert(
+                "バックアップファイルを読み込めませんでした。"
+            );
+
+            event.target.value = "";
+
+        };
+
+    reader.readAsText(
+        file,
+        "UTF-8"
+    );
+
+}
+
+/*
+====================================================
+
+バックアップデータを開く
+
+Ver1.0.08
+
+・閲覧/復元選択UI
+・prompt廃止
+・ボタン操作対応
+
+====================================================
+*/
+
+let selectedBackupData = null;
+
+
+async function openBackupData(
+    backupData
+) {
+
+    /*
+    ----------------------------------------
+    WaterCheckバックアップ確認
+    ----------------------------------------
+    */
+
+    if (!backupData) {
+
+        alert(
+            "バックアップデータがありません。"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !backupData.app ||
+        backupData.app.name !== "WaterCheck"
+    ) {
+
+        alert(
+            "WaterCheckのバックアップファイルではありません。"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !Array.isArray(
+            backupData.workData
+        )
+    ) {
+
+        alert(
+            "チェックデータがありません。"
+        );
+
+        return;
+
+    }
+
+
+    /*
+    ----------------------------------------
+    バックアップ保持
+    ----------------------------------------
+    */
+
+    selectedBackupData =
+        backupData;
+
+
+    const exportedAt =
+        formatBackupDate(
+            backupData.app.exportedAt
+        );
+
+
+    const evidenceCount =
+        Array.isArray(
+            backupData.evidence
+        )
+            ? backupData.evidence.length
+            : 0;
+
+
+    /*
+    ----------------------------------------
+    選択画面表示
+    ----------------------------------------
+    */
+
+    const dialog =
+        document.getElementById(
+            "backupListDialog"
+        );
+
+
+    const area =
+        document.getElementById(
+            "backupListArea"
+        );
+
+
+    if (
+        !dialog ||
+        !area
+    ) {
+
+        console.error(
+            "バックアップ選択画面がありません"
+        );
+
+        return;
+
+    }
+
+
+    area.innerHTML =
+
+        "<div class='backup-select-info'>" +
+
+        "<p><b>作成日時</b><br>" +
+        exportedAt +
+        "</p>" +
+
+        "<p><b>チェック項目：</b>" +
+        backupData.workData.length +
+        "件</p>" +
+
+        "<p><b>写真：</b>" +
+        evidenceCount +
+        "件</p>" +
+
+        "</div>" +
+
+        "<button id='viewBackupButton' class='backup-main-button'>" +
+        "閲覧する" +
+        "</button>" +
+
+        "<button id='restoreBackupButton' class='backup-restore-button'>" +
+        "復元する" +
+        "</button>";
+
+
+    dialog.style.display =
+        "flex";
+
+
+    /*
+    ----------------------------------------
+    閲覧ボタン
+    ----------------------------------------
+    */
+
+    document
+        .getElementById(
+            "viewBackupButton"
+        )
+        .onclick =
+        async () => {
+
+            dialog.style.display =
+                "none";
+
+            await viewBackupData(
+                selectedBackupData
+            );
+
+        };
+
+
+    /*
+    ----------------------------------------
+    復元ボタン
+    ----------------------------------------
+    */
+
+    document
+        .getElementById(
+            "restoreBackupButton"
+        )
+        .onclick =
+        async () => {
+
+            dialog.style.display =
+                "none";
+
+            await confirmRestoreBackup(
+                selectedBackupData
+            );
+
+        };
+
+
+}
+
+/*
+====================================================
+
+バックアップ日時表示
+
+====================================================
+*/
+
+function formatBackupDate(
+    dateString
+) {
+
+    if (!dateString) {
+
+        return "日時不明";
+
+    }
+
+    const date =
+        new Date(
+            dateString
+        );
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "日時不明";
+
+    }
+
+    return (
+
+        date.getFullYear()
+
+        + "/"
+
+        + String(
+            date.getMonth() + 1
+        ).padStart(2, "0")
+
+        + "/"
+
+        + String(
+            date.getDate()
+        ).padStart(2, "0")
+
+        + " "
+
+        + String(
+            date.getHours()
+        ).padStart(2, "0")
+
+        + ":"
+
+        + String(
+            date.getMinutes()
+        ).padStart(2, "0")
+
+    );
+
+}
+
+
+/*
+====================================================
+
+バックアップ閲覧
+
+Ver1.0.08
+
+・バックアップ情報表示
+・チェック一覧表示
+・現在データは変更しない
+
+====================================================
+*/
+
+async function viewBackupData(
+    backupData
+) {
+
+    const exportedAt =
+        formatBackupDate(
+            backupData.app.exportedAt
+        );
+
+    const evidenceCount =
+        Array.isArray(
+            backupData.evidence
+        )
+            ? backupData.evidence.length
+            : 0;
+
+    const infoArea =
+        document.getElementById(
+            "backupViewInfo"
+        );
+
+    const viewArea =
+        document.getElementById(
+            "backupViewArea"
+        );
+
+    const dialog =
+        document.getElementById(
+            "backupViewDialog"
+        );
+
+    if (
+        !infoArea ||
+        !viewArea ||
+        !dialog
+    ) {
+
+        alert(
+            "バックアップ参照画面を表示できません。"
+        );
+
+        return;
+
+    }
+
+    /*
+    ----------------------------------------
+    情報表示
+    ----------------------------------------
+    */
+
+    infoArea.innerHTML =
+
+        "<b>作成日時：</b>" +
+        exportedAt +
+        "<br>" +
+
+        "<b>チェック項目：</b>" +
+        backupData.workData.length +
+        "件<br>" +
+
+        "<b>写真：</b>" +
+        evidenceCount +
+        "件";
+
+    /*
+    ----------------------------------------
+    一覧表示
+    ----------------------------------------
+    */
+
+    let html = "";
+
+    console.log(backupData.workData);
+    
+    backupData.workData
+        .sort(
+            (a, b) =>
+                a.order - b.order
+        )
+        .forEach(
+
+            item => {
+
+                const status =
+
+                    item.status === "check"
+
+                    ? "🟢 完了"
+
+                    : "⚪ 未実施";
+
+            html +=
+
+                "<div class='backup-item'>"
+
+                +
+
+                "<span class='backup-item-no'>"
+
+                +
+
+                "No."
+
+                +
+
+                item.order
+
+                +
+
+                "</span>"
+
+                +
+
+                "<span class='backup-item-status'>"
+
+                +
+
+                "<span class='status-text'>"
+
+                +
+
+                status
+
+                +
+
+                "</span>"
+
+                +
+
+                "</span>"
+
+                +
+
+                "<span class='backup-item-name'>"
+
+                +
+
+                item.name
+
+                +
+
+                "</span>"
+
+                +
+
+                "</div>";
+
+            }
+
+        );
+
+    viewArea.innerHTML =
+        html;
+
+    dialog.style.display =
+        "flex";
+
+}
+
+/*
+====================================================
+
+バックアップ復元確認
+
+Ver1.0.08
+
+・現在データをバックアップで置換
+・写真もIndexedDBへ復元
+・復元後に一覧を再表示
+
+====================================================
+*/
+
+async function confirmRestoreBackup(
+    backupData
+) {
+
+    const exportedAt =
+        formatBackupDate(
+            backupData.app.exportedAt
+        );
+
+    const evidenceCount =
+        Array.isArray(
+            backupData.evidence
+        )
+            ? backupData.evidence.length
+            : 0;
+
+    /*
+    ----------------------------------------
+    復元前確認
+    ----------------------------------------
+    */
+
+    const result =
+        confirm(
+
+            "以下のバックアップを復元します。\n\n" +
+
+            "作成日時：" +
+            exportedAt +
+            "\n\n" +
+
+            "チェック項目：" +
+            backupData.workData.length +
+            "件\n" +
+
+            "写真：" +
+            evidenceCount +
+            "件\n\n" +
+
+            "現在のチェックデータ・メモ・写真は\n" +
+            "このバックアップの内容に置き換わります。\n\n" +
+
+            "本当に復元しますか？"
+
+        );
+
+    if (!result) {
+
+        return;
+
+    }
+
+    /*
+    ----------------------------------------
+    写真DB確認
+    ----------------------------------------
+    */
+
+    if (!photoDB) {
+
+        alert(
+
+            "写真DBの準備が完了していません。\n" +
+            "少し待ってからもう一度実行してください。"
+
+        );
+
+        return;
+
+    }
+
+    try {
+
+        /*
+        ----------------------------------------
+        チェックデータ復元
+        ----------------------------------------
+        */
+
+        workData =
+            JSON.parse(
+
+                JSON.stringify(
+                    backupData.workData
+                )
+
+            );
+
+        /*
+        ----------------------------------------
+        写真復元
+        ----------------------------------------
+        */
+
+        await restoreBackupPhotos(
+            backupData.evidence || []
+        );
+
+        /*
+        ----------------------------------------
+        LocalStorage保存
+        ----------------------------------------
+        */
+
+        saveWorkData();
+
+        /*
+        ----------------------------------------
+        画面再構築
+        ----------------------------------------
+        */
+
+        createChecklist();
+
+        updateProgress();
+
+        /*
+        ----------------------------------------
+        写真表示
+        ----------------------------------------
+        */
+
+        restorePhotos();
+
+        /*
+        ----------------------------------------
+        完了通知
+        ----------------------------------------
+        */
+
+        alert(
+
+            "バックアップを復元しました。\n\n" +
+
+            "チェック項目：" +
+            workData.length +
+            "件\n" +
+
+            "写真：" +
+            evidenceCount +
+            "件"
+
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+
+            "バックアップ復元エラー:",
+
+            error
+
+        );
+
+        alert(
+
+            "バックアップの復元に失敗しました。\n\n" +
+
+            "現在のデータは変更されていない可能性があります。"
+
+        );
+
+    }
+
+}
+
+
+/*
+====================================================
+
+バックアップ写真復元
+
+Ver1.0.08
+
+JSON内のBase64画像をIndexedDBへ戻す。
+
+====================================================
+*/
+
+async function restoreBackupPhotos(
+    evidence
+) {
+
+    if (!photoDB) {
+
+        throw new Error(
+            "写真DB未準備"
+        );
+
+    }
+
+    const transaction =
+        photoDB.transaction(
+
+            [
+                "photos"
+            ],
+
+            "readwrite"
+
+        );
+
+    const store =
+        transaction.objectStore(
+            "photos"
+        );
+
+    /*
+    ----------------------------------------
+    現在の写真をすべて削除
+    ----------------------------------------
+    */
+
+    store.clear();
+
+    /*
+    ----------------------------------------
+    バックアップ写真を登録
+    ----------------------------------------
+    */
+
+    for (
+        const photo of evidence
+    ) {
+
+        if (
+            !photo ||
+            !photo.itemId ||
+            !photo.image
+        ) {
+
+            continue;
+
+        }
+
+        const imageBlob =
+            dataUrlToBlob(
+                photo.image
+            );
+
+        store.put({
+
+            id:
+                photo.itemId,
+
+            type:
+                "photo",
+
+            image:
+                imageBlob,
+
+            capturedAt:
+                photo.capturedAt || "",
+
+            addedAt:
+                photo.addedAt || ""
+
+        });
+
+    }
+
+    /*
+    ----------------------------------------
+    IndexedDB処理完了待ち
+    ----------------------------------------
+    */
+
+    await new Promise(
+
+        (resolve, reject) => {
+
+            transaction.oncomplete =
+                () => {
+
+                    console.log(
+                        "バックアップ写真復元完了"
+                    );
+
+                    resolve();
+
+                };
+
+            transaction.onerror =
+                () => {
+
+                    reject(
+                        transaction.error
+                    );
+
+                };
+
+            transaction.onabort =
+                () => {
+
+                    reject(
+                        transaction.error ||
+                        new Error(
+                            "写真復元処理が中断されました"
+                        )
+                    );
+
+                };
+
+        }
+
+    );
+
+}
+
+
+/*
+====================================================
+
+Data URL → Blob
+
+Ver1.0.08
+
+バックアップJSON内のBase64画像を
+IndexedDB保存用Blobへ変換する。
+
+====================================================
+*/
+
+function dataUrlToBlob(
+    dataUrl
+) {
+
+    const parts =
+        dataUrl.split(",");
+
+    if (
+        parts.length < 2
+    ) {
+
+        throw new Error(
+            "画像データ形式が不正です"
+        );
+
+    }
+
+    const mimeMatch =
+        parts[0].match(
+            /data:(.*?);base64/
+        );
+
+    const mimeType =
+        mimeMatch
+            ? mimeMatch[1]
+            : "image/jpeg";
+
+    const binary =
+        atob(
+            parts[1]
+        );
+
+    const length =
+        binary.length;
+
+    const bytes =
+        new Uint8Array(
+            length
+        );
+
+    for (
+        let i = 0;
+        i < length;
+        i++
+    ) {
+
+        bytes[i] =
+            binary.charCodeAt(i);
+
+    }
+
+    return new Blob(
+
+        [
+            bytes
+        ],
+
+        {
+            type:
+                mimeType
+        }
+
+    );
+
+}
+
+/*
+====================================================
+
+バックアップ閲覧ダイアログ閉じる
+
+Ver1.0.09
+
+====================================================
+*/
+
+
+function closeBackupViewDialog() {
+
+    const dialog =
+        document.getElementById(
+            "backupViewDialog"
+        );
+
+
+    if (dialog) {
+
+        dialog.style.display =
+            "none";
+
+    }
 
 }
