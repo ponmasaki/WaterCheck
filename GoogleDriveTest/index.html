@@ -4,12 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Drive Test</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
     <h1>Google Drive API Test</h1>
 
     <p>WaterCheck Ver2 Google Drive接続テスト</p>
+    <div id="g_id_onload"
+        data-client_id="305148912249-6k7h28c4spkvavpli1omi5qpcl0b1u65.apps.googleusercontent.com"
+        data-callback="handleCredentialResponse">
+    </div>
 
+    <div class="g_id_signin"
+        data-type="standard">
+    </div>
+
+    <script>
+        function handleCredentialResponse(response) {
+            document.body.insertAdjacentHTML(
+                "beforeend",
+                "<p>Google認証に成功しました。</p>"
+            );
+
+            console.log("Credential received:", response);
+        }
+    </script>
 </body>
 </html>
