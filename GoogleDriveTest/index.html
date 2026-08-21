@@ -20,6 +20,8 @@
         data-type="standard">
     </div>
 
+    <button onclick="requestDriveToken()">Google Driveアクセス許可を取得</button>
+
     <script>
         function handleCredentialResponse(response) {
             document.body.insertAdjacentHTML(
@@ -29,6 +31,23 @@
 
             console.log("Credential received:", response);
         }
+    </script>
+
+    <script>
+        const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive";
+        let tokenClient;
+
+        window.addEventListener("load", () => {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: "305148912249-6k7h28c4spkvavpli1omi5qpcl0b1u65.apps.googleusercontent.com",
+                scope: DRIVE_SCOPE,
+                callback: (response) => {
+                    console.log("Access Token received:", response);
+                }
+            });
+
+            console.log("OAuth token client initialized.");
+        });
     </script>
 </body>
 </html>
