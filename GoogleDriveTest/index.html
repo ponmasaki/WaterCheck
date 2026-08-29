@@ -60,7 +60,9 @@
         console.log("Drive API test started.");
 
         const response = await fetch(
-            "https://www.googleapis.com/drive/v3/files?fields=files(id,name,mimeType)",                headers: {
+            "https://www.googleapis.com/drive/v3/files?fields=files(id,name,mimeType)",
+            {
+                headers: {
                     Authorization: "Bearer " + accessToken
                 }
             }
