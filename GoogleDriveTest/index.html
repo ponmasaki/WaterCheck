@@ -57,22 +57,50 @@
         }
 
         async function testDriveApi() {
-            console.log("Drive file read test started.");
+            console.log("Drive file create test started.");
 
-            const fileId = "1zIs4FNXfX2i3uBcZMaAec4kbC7-dmN0n5eixcPAhQYk";
+            const folderId = "1Wd47BWeQseTkNvpqLFKmNbQ-62s7HpKe";
+
+            const metadata = {
+                name: "WaterCheck_test_data.txt",
+                mimeType: "text/plain",
+                parents: [folderId]
+            };
+
+            const content = "WaterCheck Google Drive test";
+
+            const form = new FormData();
+
+            form.append(
+                "metadata",
+                new Blob(
+                    [JSON.stringify(metadata)],
+                    { type: "application/json" }
+                )
+            );
+
+            form.append(
+                "file",
+                new Blob(
+                    [content],
+                    { type: "text/plain" }
+                )
+            );
 
             const response = await fetch(
-                "https://www.googleapis.com/drive/v3/files/" + fileId + "?alt=media",
+                "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
                 {
+                    method: "POST",
                     headers: {
                         Authorization: "Bearer " + accessToken
-                    }
+                    },
+                    body: form
                 }
             );
 
-            const data = await response.text();
+            const data = await response.json();
 
-            console.log("test.txt contents:", data);
+            console.log("Created file:", data);
         }
     </script>
 </body>
