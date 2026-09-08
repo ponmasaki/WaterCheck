@@ -523,6 +523,21 @@ Ver1.0.08
     style="display:none;"
 >
 
+<script>
+    function handleCredentialResponse(response) {
+        console.log("Google認証に成功しました。");
+
+        const signinArea =
+            document.querySelector(".g_id_signin");
+
+        if (signinArea) {
+            signinArea.style.display = "none";
+        }
+
+        alert("Google認証に成功しました。");
+    }
+</script>
+
 </body>
 
 </html>
