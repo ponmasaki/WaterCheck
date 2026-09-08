@@ -524,6 +524,10 @@ Ver1.0.08
 >
 
 <script>
+    const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive";
+    let tokenClient;
+    let accessToken = null;
+
     function handleCredentialResponse(response) {
         console.log("Google認証に成功しました。");
 
@@ -535,6 +539,23 @@ Ver1.0.08
         }
 
         alert("Google認証に成功しました。");
+    }
+
+    window.addEventListener("load", () => {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: "305148912249-6k7h28c4spkvavpli1omi5qpcl0b1u65.apps.googleusercontent.com",
+            scope: DRIVE_SCOPE,
+            callback: (response) => {
+                console.log("Access Token received:", response);
+                accessToken = response.access_token;
+            }
+        });
+
+        console.log("OAuth token client initialized.");
+    });
+
+    function requestDriveToken() {
+        tokenClient.requestAccessToken();
     }
 </script>
 
