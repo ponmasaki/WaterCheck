@@ -154,6 +154,14 @@ function saveWorkData() {
         STORAGE_KEY,
         JSON.stringify(workData)
     );
+
+    // Google Driveへ同期
+    if (
+        typeof accessToken !== "undefined" &&
+        accessToken
+    ) {
+        uploadWorkDataToDrive();
+    }
 }
 
 /*
