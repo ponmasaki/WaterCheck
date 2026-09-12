@@ -524,40 +524,631 @@ Ver1.0.08
 >
 
 <script>
-    const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive";
+    const DRIVE_SCOPE =
+        "https://www.googleapis.com/auth/drive";
+
+    const DRIVE_FOLDER_ID =
+        "1Wd47BWeQseTkNvpqLFKmNbQ-62s7HpKe";
+
+    const DRIVE_FILE_ID_KEY =
+        "WaterCheck_DriveFileId_V1";
+
     let tokenClient;
     let accessToken = null;
 
+
+    /*
+    ====================================================
+    Google認証成功
+    ====================================================
+    */
     function handleCredentialResponse(response) {
-        console.log("Google認証に成功しました。");
+
+        console.log(
+            "Google認証に成功しました。"
+        );
 
         const signinArea =
-            document.querySelector(".g_id_signin");
+            document.querySelector(
+                ".g_id_signin"
+            );
 
         if (signinArea) {
-            signinArea.style.display = "none";
+            signinArea.style.display =
+                "none";
         }
 
-        alert("Google認証に成功しました。");
+        alert(
+            "Google認証に成功しました。"
+        );
 
         requestDriveToken();
     }
 
-    window.addEventListener("load", () => {
-        tokenClient = google.accounts.oauth2.initTokenClient({
-            client_id: "305148912249-6k7h28c4spkvavpli1omi5qpcl0b1u65.apps.googleusercontent.com",
-            scope: DRIVE_SCOPE,
-            callback: (response) => {
-                console.log("Access Token received:", response);
-                accessToken = response.access_token;
-            }
-        });
 
-        console.log("OAuth token client initialized.");
-    });
+    /*
+    ====================================================
+    OAuthトークンクライアント初期化
+    ====================================================
+    */
+    window.addEventListener(
+        "load",
+        () => {
 
+            tokenClient =
+                google.accounts.oauth2.initTokenClient({
+
+                    client_id:
+                        "305148912249-6k7h28c4spkvavpli1omi5qpcl0b1u65.apps.googleusercontent.com",
+
+                    scope:
+                        DRIVE_SCOPE,
+
+                    callback:
+                        async (response) => {
+
+                            console.log(
+                                "Access Token received:",
+                                response
+                            );
+
+                            accessToken =
+                                response.access_token;
+
+                            /*
+                            --------------------------------
+                            認証後にGoogle Driveから
+                            最新データを読み込む
+                            --------------------------------
+                            */
+                            await loadWorkDataFromDrive();
+                        }
+                });
+
+            console.log(
+                "OAuth token client initialized."
+            );
+        }
+    );
+
+
+    /*
+    ====================================================
+    Google Driveアクセストークン取得
+    ====================================================
+    */
     function requestDriveToken() {
+
+        if (!tokenClient) {
+
+            console.error(
+                "OAuth token clientがまだ初期化されていません。"
+            );
+
+            return;
+        }
+
         tokenClient.requestAccessToken();
+    }
+
+
+    /*
+    ====================================================
+    Google Driveから作業データを読み込む
+    ====================================================
+    */
+    async function loadWorkDataFromDrive() {
+
+        if (!accessToken) {
+
+            console.log(
+                "Google Drive読み込み：アクセストークンなし"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            /*
+            --------------------------------------------
+            まず、この端末に保存されている
+            DriveファイルIDを確認
+            --------------------------------------------
+            */
+            let fileId =
+                localStorage.getItem(
+                    DRIVE_FILE_ID_KEY
+                );
+
+
+            /*
+            --------------------------------------------
+            ファイルIDがない場合は
+            WaterCheck.jsonをDriveから検索
+            --------------------------------------------
+            */
+            if (!fileId) {
+
+                const query =
+                    "'" +
+                    DRIVE_FOLDER_ID +
+                    "' in parents and " +
+                    "name = 'WaterCheck.json' and " +
+                    "trashed = false";
+
+                const searchUrl =
+                    "https://www.googleapis.com/drive/v3/files" +
+                    "?q=" +
+                    encodeURIComponent(query) +
+                    "&fields=files(id,name,modifiedTime)" +
+                    "&orderBy=modifiedTime desc" +
+                    "&pageSize=1";
+
+
+                const searchResponse =
+                    await fetch(
+                        searchUrl,
+                        {
+                            headers: {
+                                Authorization:
+                                    "Bearer " +
+                                    accessToken
+                            }
+                        }
+                    );
+
+
+                if (!searchResponse.ok) {
+
+                    console.error(
+                        "Google Driveファイル検索エラー:",
+                        searchResponse.status,
+                        await searchResponse.text()
+                    );
+
+                    return;
+                }
+
+
+                const searchData =
+                    await searchResponse.json();
+
+
+                if (
+                    searchData.files &&
+                    searchData.files.length > 0
+                ) {
+
+                    fileId =
+                        searchData.files[0].id;
+
+                    localStorage.setItem(
+                        DRIVE_FILE_ID_KEY,
+                        fileId
+                    );
+
+                    console.log(
+                        "Google Driveファイルを発見しました:",
+                        fileId
+                    );
+
+                } else {
+
+                    /*
+                    ------------------------------------
+                    Driveにまだファイルがない場合
+
+                    この端末のLocalStorageにある
+                    現在のデータを初期データとして
+                    Driveへアップロードする
+                    ------------------------------------
+                    */
+
+                    console.log(
+                        "Google DriveにWaterCheck.jsonがありません。"
+                    );
+
+                    await uploadWorkDataToDrive();
+
+                    return;
+                }
+            }
+
+
+            /*
+            --------------------------------------------
+            Drive上のJSONファイルを読み込む
+            --------------------------------------------
+            */
+            const response =
+                await fetch(
+                    "https://www.googleapis.com/drive/v3/files/" +
+                    fileId +
+                    "?alt=media",
+                    {
+                        headers: {
+                            Authorization:
+                                "Bearer " +
+                                accessToken
+                        }
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                console.error(
+                    "Google Driveデータ読み込みエラー:",
+                    response.status,
+                    await response.text()
+                );
+
+                return;
+            }
+
+
+            const text =
+                await response.text();
+
+            const data =
+                JSON.parse(text);
+
+
+            /*
+            --------------------------------------------
+            データ形式確認
+            --------------------------------------------
+            */
+            if (
+                !data ||
+                !Array.isArray(
+                    data.workData
+                )
+            ) {
+
+                console.error(
+                    "Google Driveのデータ形式が不正です。"
+                );
+
+                return;
+            }
+
+
+            /*
+            --------------------------------------------
+            Driveのデータを
+            現在のworkDataへ反映
+            --------------------------------------------
+            */
+            workData =
+                data.workData;
+
+
+            /*
+            --------------------------------------------
+            LocalStorageにも保存
+            --------------------------------------------
+            */
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(workData)
+            );
+
+
+            /*
+            --------------------------------------------
+            画面を再生成
+            --------------------------------------------
+            */
+            createChecklist();
+            updateProgress();
+
+
+            console.log(
+                "Google Driveから作業データを読み込みました。"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Google Drive読み込み中にエラーが発生しました:",
+                error
+            );
+        }
+    }
+
+
+    /*
+    ====================================================
+    Google Driveへ作業データを保存
+    ====================================================
+    */
+    async function uploadWorkDataToDrive() {
+
+        if (!accessToken) {
+            return;
+        }
+
+
+        const backupData = {
+
+            app: {
+                name: "WaterCheck",
+                version: "1.0.08",
+                exportedAt:
+                    new Date().toISOString()
+            },
+
+            workData:
+                workData,
+
+            evidence: []
+        };
+
+
+        const jsonText =
+            JSON.stringify(
+                backupData,
+                null,
+                2
+            );
+
+
+        try {
+
+            /*
+            --------------------------------------------
+            この端末にファイルIDがあるか確認
+            --------------------------------------------
+            */
+            let fileId =
+                localStorage.getItem(
+                    DRIVE_FILE_ID_KEY
+                );
+
+
+            /*
+            --------------------------------------------
+            ファイルIDがない場合は
+            Drive上を検索する
+            --------------------------------------------
+            */
+            if (!fileId) {
+
+                const query =
+                    "'" +
+                    DRIVE_FOLDER_ID +
+                    "' in parents and " +
+                    "name = 'WaterCheck.json' and " +
+                    "trashed = false";
+
+
+                const searchUrl =
+                    "https://www.googleapis.com/drive/v3/files" +
+                    "?q=" +
+                    encodeURIComponent(query) +
+                    "&fields=files(id,name,modifiedTime)" +
+                    "&orderBy=modifiedTime desc" +
+                    "&pageSize=1";
+
+
+                const searchResponse =
+                    await fetch(
+                        searchUrl,
+                        {
+                            headers: {
+                                Authorization:
+                                    "Bearer " +
+                                    accessToken
+                            }
+                        }
+                    );
+
+
+                if (!searchResponse.ok) {
+
+                    console.error(
+                        "Google Driveファイル検索エラー:",
+                        searchResponse.status,
+                        await searchResponse.text()
+                    );
+
+                    return;
+                }
+
+
+                const searchData =
+                    await searchResponse.json();
+
+
+                if (
+                    searchData.files &&
+                    searchData.files.length > 0
+                ) {
+
+                    fileId =
+                        searchData.files[0].id;
+
+                    localStorage.setItem(
+                        DRIVE_FILE_ID_KEY,
+                        fileId
+                    );
+
+                    console.log(
+                        "既存のGoogle Driveファイルを使用します:",
+                        fileId
+                    );
+                }
+            }
+
+
+            let response;
+
+
+            /*
+            --------------------------------------------
+            既存ファイルを更新
+            --------------------------------------------
+            */
+            if (fileId) {
+
+                response =
+                    await fetch(
+                        "https://www.googleapis.com/upload/drive/v3/files/" +
+                        fileId +
+                        "?uploadType=media",
+                        {
+                            method: "PATCH",
+
+                            headers: {
+                                Authorization:
+                                    "Bearer " +
+                                    accessToken,
+
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                jsonText
+                        }
+                    );
+
+
+            /*
+            --------------------------------------------
+            ファイルが存在しない場合は新規作成
+            --------------------------------------------
+            */
+            } else {
+
+                const metadata = {
+
+                    name:
+                        "WaterCheck.json",
+
+                    parents: [
+                        DRIVE_FOLDER_ID
+                    ],
+
+                    mimeType:
+                        "application/json"
+                };
+
+
+                const boundary =
+                    "-------WaterCheckBoundary";
+
+
+                const body =
+                    "--" +
+                    boundary +
+                    "\r\n" +
+
+                    "Content-Type: application/json; charset=UTF-8\r\n\r\n" +
+
+                    JSON.stringify(
+                        metadata
+                    ) +
+
+                    "\r\n" +
+
+                    "--" +
+                    boundary +
+                    "\r\n" +
+
+                    "Content-Type: application/json\r\n\r\n" +
+
+                    jsonText +
+
+                    "\r\n" +
+
+                    "--" +
+                    boundary +
+                    "--";
+
+
+                response =
+                    await fetch(
+                        "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                Authorization:
+                                    "Bearer " +
+                                    accessToken,
+
+                                "Content-Type":
+                                    "multipart/related; boundary=" +
+                                    boundary
+                            },
+
+                            body:
+                                body
+                        }
+                    );
+            }
+
+
+            /*
+            --------------------------------------------
+            保存結果確認
+            --------------------------------------------
+            */
+            if (!response.ok) {
+
+                console.error(
+                    "Google Drive保存エラー:",
+                    response.status,
+                    await response.text()
+                );
+
+                return;
+            }
+
+
+            const data =
+                await response.json();
+
+
+            /*
+            --------------------------------------------
+            新規作成時はファイルIDを保存
+            --------------------------------------------
+            */
+            if (
+                !fileId &&
+                data.id
+            ) {
+
+                localStorage.setItem(
+                    DRIVE_FILE_ID_KEY,
+                    data.id
+                );
+
+                console.log(
+                    "Google Driveファイルを作成しました:",
+                    data.id
+                );
+
+            } else {
+
+                console.log(
+                    "Google Driveを更新しました。"
+                );
+            }
+
+
+        } catch (error) {
+
+            console.error(
+                "Google Drive保存中にエラーが発生しました:",
+                error
+            );
+        }
     }
 </script>
 
