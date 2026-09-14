@@ -73,7 +73,11 @@
         Ver.1.0.07
     </p>
 
-    <div id="driveNewIndicator" style="display: none;">
+    <div
+        id="driveNewIndicator"
+        style="display: none;"
+        onclick="hideDriveNewIndicator()"
+    >
         NEW
     </div>
 
@@ -812,6 +816,21 @@ Ver1.0.08
         }
     }
 
+    function hideDriveNewIndicator() {
+
+        const newIndicator =
+            document.getElementById("driveNewIndicator");
+
+        if (newIndicator) {
+            newIndicator.style.display = "none";
+        }
+
+        remoteUpdateDetected = false;
+
+        console.log(
+            "NEW表示を確認済みにしました。"
+        );
+    }
 
     /*
     ----------------------------------------------------
