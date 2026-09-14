@@ -634,6 +634,160 @@ Ver1.0.08
 
     /*
     ====================================================
+    Google Drive自動更新検知
+    ====================================================
+    */
+
+    // 前回確認したDriveファイルの更新日時
+    let lastDriveModifiedTime = null;
+
+    // 自動更新チェック中の多重実行防止
+    let driveCheckInProgress = false;
+
+
+    /*
+    ----------------------------------------------------
+    Google Driveの更新日時だけを確認
+    ----------------------------------------------------
+    */
+    async function checkDriveForUpdates() {
+
+        if (!accessToken) {
+            return;
+        }
+
+        if (driveCheckInProgress) {
+            return;
+        }
+
+        driveCheckInProgress = true;
+
+        try {
+
+            const fileId =
+                localStorage.getItem(
+                    DRIVE_FILE_ID_KEY
+                );
+
+            if (!fileId) {
+                return;
+            }
+
+
+            const metadataUrl =
+                "https://www.googleapis.com/drive/v3/files/" +
+                fileId +
+                "?fields=id,name,modifiedTime";
+
+
+            const response =
+                await fetch(
+                    metadataUrl,
+                    {
+                        headers: {
+                            Authorization:
+                                "Bearer " +
+                                accessToken
+                        }
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                console.error(
+                    "Google Drive更新確認エラー:",
+                    response.status,
+                    await response.text()
+                );
+
+                return;
+            }
+
+
+            const fileData =
+                await response.json();
+
+
+            const modifiedTime =
+                fileData.modifiedTime;
+
+
+            /*
+            --------------------------------------------
+            初回確認
+            --------------------------------------------
+            */
+            if (
+                lastDriveModifiedTime === null
+            ) {
+
+                lastDriveModifiedTime =
+                    modifiedTime;
+
+                console.log(
+                    "Google Drive更新日時を記録しました:",
+                    modifiedTime
+                );
+
+                return;
+            }
+
+
+            /*
+            --------------------------------------------
+            更新を検知
+            --------------------------------------------
+            */
+            if (
+                modifiedTime !==
+                lastDriveModifiedTime
+            ) {
+
+                console.log(
+                    "Google Driveの更新を検知しました:",
+                    modifiedTime
+                );
+
+
+                lastDriveModifiedTime =
+                    modifiedTime;
+
+
+                /*
+                Drive上のJSON本体を取得
+                */
+                await loadWorkDataFromDrive();
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Google Drive自動更新確認中にエラーが発生しました:",
+                error
+            );
+
+        } finally {
+
+            driveCheckInProgress = false;
+
+        }
+    }
+
+
+    /*
+    ----------------------------------------------------
+    30秒ごとにDriveの更新を確認
+    ----------------------------------------------------
+    */
+    setInterval(
+        checkDriveForUpdates,
+        30000
+    );
+
+    /*
+    ====================================================
     Google Driveから作業データを読み込む
     ====================================================
     */
