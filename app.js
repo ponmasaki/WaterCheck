@@ -155,6 +155,9 @@ function saveWorkData() {
         JSON.stringify(workData)
     );
 
+    // この端末でデータを変更した時刻を記録
+    lastLocalUpdateTime = Date.now();
+
     // Google Driveへ同期
     if (
         typeof accessToken !== "undefined" &&
