@@ -763,6 +763,13 @@ Ver1.0.08
                 // 他端末からの更新を検知
                 remoteUpdateDetected = true;
 
+                const newIndicator =
+                    document.getElementById("driveNewIndicator");
+
+                if (newIndicator) {
+                    newIndicator.style.display = "block";
+                }
+
                 console.log(
                     "他端末からの更新を検知しました。"
                 );
