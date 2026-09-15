@@ -633,13 +633,6 @@ function updateStatus(id, checked) {
         return;
     }
 
-    // この項目を確認したのでNEWを解除
-    if (
-        typeof remoteChangedItemIds !== "undefined"
-    ) {
-        remoteChangedItemIds.delete(id);
-    }
-
     if (checked) {
         target.status =
             "check";
@@ -652,6 +645,19 @@ function updateStatus(id, checked) {
 
         target.checkedTime =
             "";
+    }
+
+    /*
+    --------------------------------------------
+    この項目を確認済みにする
+    --------------------------------------------
+    */
+    if (
+        typeof remoteChangedItemIds !== "undefined"
+    ) {
+        remoteChangedItemIds.delete(
+            id
+        );
     }
 
     saveWorkData();

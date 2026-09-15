@@ -794,13 +794,6 @@ Ver1.0.08
                 // 他端末からの更新を検知
                 remoteUpdateDetected = true;
 
-                const newIndicator =
-                    document.getElementById("driveNewIndicator");
-
-                if (newIndicator) {
-                    newIndicator.style.display = "block";
-                }
-
                 console.log(
                     "他端末からの更新を検知しました。"
                 );
@@ -1037,31 +1030,16 @@ Ver1.0.08
 
             /*
             --------------------------------------------
-            Driveのデータを
-            現在のworkDataへ反映
-            --------------------------------------------
-            */
-            workData =
-                data.workData;
-
-            /*
-            --------------------------------------------
             他端末からの更新だった場合、
+            Drive反映前のworkDataと比較して
             変更された項目のIDを記録
             --------------------------------------------
             */
             if (remoteUpdateDetected) {
 
-                const previousData =
-                    JSON.parse(
-                        localStorage.getItem(
-                            STORAGE_KEY
-                        ) || "[]"
-                    );
-
                 const previousMap =
                     new Map(
-                        previousData.map(
+                        workData.map(
                             item => [
                                 item.id,
                                 JSON.stringify(item)
@@ -1086,17 +1064,12 @@ Ver1.0.08
                                 item.id
                             );
                         }
-                    }
-                );
 
-                /*
-                新しく追加された項目もNEW対象
-                */
-                data.workData.forEach(
-                    item => {
-
+                        /*
+                        新しく追加された項目もNEW対象
+                        */
                         if (
-                            !previousMap.has(item.id)
+                            previous === undefined
                         ) {
                             remoteChangedItemIds.add(
                                 item.id
@@ -1105,6 +1078,16 @@ Ver1.0.08
                     }
                 );
             }
+
+
+            /*
+            --------------------------------------------
+            Driveのデータを
+            現在のworkDataへ反映
+            --------------------------------------------
+            */
+            workData =
+                data.workData;
 
 
             /*
