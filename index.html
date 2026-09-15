@@ -89,14 +89,6 @@
         Ver.1.0.07
     </p>
 
-    <div
-        id="driveNewIndicator"
-        style="display: none;"
-        onclick="hideDriveNewIndicator()"
-    >
-        NEW
-    </div>
-
 </header>
 
 <!-- ================================
@@ -690,6 +682,8 @@ Ver1.0.08
 
     let remoteUpdateDetected = false;
 
+    // 他端末から変更された項目のID
+    let remoteChangedItemIds = new Set();
 
     /*
     ----------------------------------------------------
@@ -1050,6 +1044,68 @@ Ver1.0.08
             */
             workData =
                 data.workData;
+
+            /*
+            --------------------------------------------
+            他端末からの更新だった場合、
+            変更された項目のIDを記録
+            --------------------------------------------
+            */
+            if (remoteUpdateDetected) {
+
+                const previousData =
+                    JSON.parse(
+                        localStorage.getItem(
+                            STORAGE_KEY
+                        ) || "[]"
+                    );
+
+                const previousMap =
+                    new Map(
+                        previousData.map(
+                            item => [
+                                item.id,
+                                JSON.stringify(item)
+                            ]
+                        )
+                    );
+
+                data.workData.forEach(
+                    item => {
+
+                        const previous =
+                            previousMap.get(item.id);
+
+                        const current =
+                            JSON.stringify(item);
+
+                        if (
+                            previous !== undefined &&
+                            previous !== current
+                        ) {
+                            remoteChangedItemIds.add(
+                                item.id
+                            );
+                        }
+                    }
+                );
+
+                /*
+                新しく追加された項目もNEW対象
+                */
+                data.workData.forEach(
+                    item => {
+
+                        if (
+                            !previousMap.has(item.id)
+                        ) {
+                            remoteChangedItemIds.add(
+                                item.id
+                            );
+                        }
+                    }
+                );
+            }
 
 
             /*

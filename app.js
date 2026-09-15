@@ -405,10 +405,52 @@ function createChecklist() {
                 No
                 --------------------------------
                 */
-                row.appendChild(
+                const noCell =
                     createCell(
                         item.order
-                    )
+                    );
+
+                if (
+                    typeof remoteChangedItemIds !== "undefined" &&
+                    remoteChangedItemIds.has(item.id)
+                ) {
+
+                    const newBadge =
+                        document.createElement(
+                            "span"
+                        );
+
+                    newBadge.textContent =
+                        " NEW";
+
+                    newBadge.style.fontWeight =
+                        "bold";
+
+                    newBadge.style.animation =
+                        "driveNewBlink 1s infinite";
+
+                    newBadge.style.cursor =
+                        "pointer";
+
+                    newBadge.addEventListener(
+                        "click",
+                        () => {
+
+                            remoteChangedItemIds.delete(
+                                item.id
+                            );
+
+                            newBadge.remove();
+                        }
+                    );
+
+                    noCell.appendChild(
+                        newBadge
+                    );
+                }
+
+                row.appendChild(
+                    noCell
                 );
 
                 /*
@@ -589,6 +631,13 @@ function updateStatus(id, checked) {
 
     if (!target) {
         return;
+    }
+
+    // この項目を確認したのでNEWを解除
+    if (
+        typeof remoteChangedItemIds !== "undefined"
+    ) {
+        remoteChangedItemIds.delete(id);
     }
 
     if (checked) {
