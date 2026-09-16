@@ -424,10 +424,10 @@ function createChecklist() {
                         " NEW";
 
                     newBadge.style.fontWeight =
-                        "bold";
+                        "900";
 
                     newBadge.style.animation =
-                        "driveNewBlink 1s infinite";
+                        "newColorFlash 0.5s infinite";
 
                     newBadge.style.cursor =
                         "pointer";
