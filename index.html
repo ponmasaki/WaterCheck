@@ -801,7 +801,7 @@ Ver1.0.08
                 /*
                 Drive上のJSON本体を取得
                 */
-                await loadWorkDataFromDrive();
+                await loadWorkDataFromDrive(true);
             }
 
         } catch (error) {
@@ -849,7 +849,7 @@ Ver1.0.08
     Google Driveから作業データを読み込む
     ====================================================
     */
-    async function loadWorkDataFromDrive() {
+    async function loadWorkDataFromDrive(isRemoteUpdate = false) {
 
         if (!accessToken) {
 
@@ -1035,7 +1035,7 @@ Ver1.0.08
             変更された項目のIDを記録
             --------------------------------------------
             */
-            if (remoteUpdateDetected) {
+            if (isRemoteUpdate) {
 
                 const previousMap =
                     new Map(
