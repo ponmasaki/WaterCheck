@@ -15,7 +15,7 @@ Commit010
 */
 
 // キャッシュ名
-const CACHE_NAME = "watercheck-cache-v3";
+const CACHE_NAME = "watercheck-cache-v4";
 
 // オフライン時に必要なファイル一覧
 const CACHE_FILES = [
