@@ -4,7 +4,6 @@
 
 <head>
 
-```
 <meta charset="UTF-8">
 
 <meta name="viewport"
@@ -22,7 +21,6 @@
 <!-- CSS -->
 
 <link rel="stylesheet" href="style.css">
-```
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <div id="g_id_onload"
@@ -143,6 +141,41 @@
          0 0 4px #000000;
 }
 
+/* ヘッダー：Ver情報を右端へ配置 */
+#header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+#appTitle {
+    margin-right: auto;
+}
+
+#appSubTitle {
+    margin-left: auto;
+    white-space: nowrap;
+    font-size: 0.95rem;
+    font-weight: normal;
+}
+
+/* スクロール時に進捗バーを画面上部へ固定 */
+#progressArea {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #121212;
+}
+
+/* 表の見出しを進捗バー直下へ固定 */
+#checkTable thead th {
+    position: sticky;
+    top: var(--progress-sticky-height, 0px);
+    z-index: 90;
+    background: #2a2a2a;
+}
+
 </style>
 
 </head>
@@ -151,16 +184,14 @@
 
 <div id="app">
 
-```
 <!-- ================================
      ヘッダー
 ================================= -->
 
 <header id="header">
 
-    <h1 id="appTitle">
-        WaterCheck <span id="appSubTitle" style="font-size: 0.45em; font-weight: normal; vertical-align: middle; white-space: nowrap;">Ver.1.0.08</span>
-    </h1>
+    <h1 id="appTitle">WaterCheck</h1>
+    <span id="appSubTitle">Ver.1.0.08</span>
 
 </header>
 
@@ -266,7 +297,6 @@
     </button>
 
 </footer>
-```
 
 </div>
 
@@ -317,7 +347,6 @@ style="display:none;"
     style="display:none;"
 >
 
-```
 <div
     class="photo-dialog-content"
 >
@@ -364,7 +393,6 @@ style="display:none;"
     </div>
 
 </div>
-```
 
 </div>
 
@@ -383,7 +411,6 @@ style="display:none;"
     style="display:none;"
 >
 
-```
 <div
     class="backup-dialog-content"
 >
@@ -445,7 +472,6 @@ style="display:none;"
     </div>
 
 </div>
-```
 
 </div>
 
@@ -465,7 +491,6 @@ style="display:none;"
     style="display:none;"
 >
 
-```
 <div
     class="backup-dialog-content"
 >
@@ -527,7 +552,6 @@ style="display:none;"
     </div>
 
 </div>
-```
 
 </div>
 
@@ -546,7 +570,6 @@ style="display:none;"
     style="display:none;"
 >
 
-```
 <div
     class="backup-confirm-content"
 >
@@ -586,7 +609,6 @@ style="display:none;"
     </div>
 
 </div>
-```
 
 </div>
 
@@ -1475,6 +1497,35 @@ Ver1.0.08
             );
         }
     }
+</script>
+
+
+<script>
+(function () {
+    function updateStickyProgressHeight() {
+        const progressArea = document.getElementById("progressArea");
+        if (!progressArea) return;
+
+        document.documentElement.style.setProperty(
+            "--progress-sticky-height",
+            progressArea.offsetHeight + "px"
+        );
+    }
+
+    window.addEventListener("load", updateStickyProgressHeight);
+    window.addEventListener("resize", updateStickyProgressHeight);
+
+    if ("ResizeObserver" in window) {
+        window.addEventListener("DOMContentLoaded", function () {
+            const progressArea = document.getElementById("progressArea");
+            if (!progressArea) return;
+
+            const observer = new ResizeObserver(updateStickyProgressHeight);
+            observer.observe(progressArea);
+            updateStickyProgressHeight();
+        });
+    }
+})();
 </script>
 
 </body>
