@@ -897,6 +897,50 @@ Ver1.0.08
 
     /*
     ====================================================
+    写真DBの準備完了待ち
+    ====================================================
+    */
+    async function waitForPhotoDBReady() {
+
+        if (photoDB) {
+            return;
+        }
+
+        await new Promise(
+            (resolve, reject) => {
+
+                let count = 0;
+
+                const timer =
+                    setInterval(
+                        () => {
+
+                            if (photoDB) {
+                                clearInterval(timer);
+                                resolve();
+                                return;
+                            }
+
+                            count++;
+
+                            if (count >= 100) {
+                                clearInterval(timer);
+                                reject(
+                                    new Error(
+                                        "写真DBの準備が完了しませんでした"
+                                    )
+                                );
+                            }
+                        },
+                        100
+                    );
+            }
+        );
+    }
+
+
+    /*
+    ====================================================
     Google Driveから作業データを読み込む
     ====================================================
     */
@@ -1154,11 +1198,27 @@ Ver1.0.08
 
             /*
             --------------------------------------------
-            画面を再生成
+            Driveの写真をIndexedDBへ復元
+            --------------------------------------------
+            */
+            if (Array.isArray(data.evidence)) {
+
+                await waitForPhotoDBReady();
+
+                await restoreBackupPhotos(
+                    data.evidence
+                );
+            }
+
+
+            /*
+            --------------------------------------------
+            画面を再生成し、写真を表示
             --------------------------------------------
             */
             createChecklist();
             updateProgress();
+            restorePhotos();
 
 
             console.log(
@@ -1180,336 +1240,243 @@ Ver1.0.08
     Google Driveへ作業データを保存
     ====================================================
     */
-async function uploadWorkDataToDrive() {
+    async function uploadWorkDataToDrive() {
 
-    if (!accessToken) {
-        return;
-    }
+        if (!accessToken) {
+            return;
+        }
 
-    try {
+        try {
 
-        /*
-        --------------------------------------------
-        IndexedDBの写真をEvidenceとして取得
-        --------------------------------------------
-        */
-        const evidence =
-            await createEvidenceBackup();
+            const evidence =
+                await createEvidenceBackup();
 
+            const backupData = {
 
-        /*
-        --------------------------------------------
-        Google Drive保存用データ作成
+                app: {
+                    name: "WaterCheck",
+                    version: "1.0.08",
+                    exportedAt:
+                        new Date().toISOString()
+                },
 
-        workData:
-            チェック状態・時刻・メモ等
+                workData:
+                    workData,
 
-        evidence:
-            写真本体（Base64）
-        --------------------------------------------
-        */
-        const backupData = {
+                evidence:
+                    evidence
+            };
 
-            app: {
-                name: "WaterCheck",
-                version: "1.0.08",
-                exportedAt:
-                    new Date().toISOString()
-            },
-
-            workData:
-                workData,
-
-            evidence:
-                evidence
-        };
-
-
-        const jsonText =
-            JSON.stringify(
-                backupData,
-                null,
-                2
-            );
-
-
-        /*
-        --------------------------------------------
-        この端末にファイルIDがあるか確認
-        --------------------------------------------
-        */
-        let fileId =
-            localStorage.getItem(
-                DRIVE_FILE_ID_KEY
-            );
-
-
-        /*
-        --------------------------------------------
-        ファイルIDがない場合は
-        Drive上を検索する
-        --------------------------------------------
-        */
-        if (!fileId) {
-
-            const query =
-                "'" +
-                DRIVE_FOLDER_ID +
-                "' in parents and " +
-                "name = 'WaterCheck.json' and " +
-                "trashed = false";
-
-
-            const searchUrl =
-                "https://www.googleapis.com/drive/v3/files" +
-                "?q=" +
-                encodeURIComponent(query) +
-                "&fields=files(id,name,modifiedTime)" +
-                "&orderBy=modifiedTime desc" +
-                "&pageSize=1";
-
-
-            const searchResponse =
-                await fetch(
-                    searchUrl,
-                    {
-                        headers: {
-                            Authorization:
-                                "Bearer " +
-                                accessToken
-                        }
-                    }
+            const jsonText =
+                JSON.stringify(
+                    backupData,
+                    null,
+                    2
                 );
 
+            let fileId =
+                localStorage.getItem(
+                    DRIVE_FILE_ID_KEY
+                );
 
-            if (!searchResponse.ok) {
+            if (!fileId) {
+
+                const query =
+                    "'" +
+                    DRIVE_FOLDER_ID +
+                    "' in parents and " +
+                    "name = 'WaterCheck.json' and " +
+                    "trashed = false";
+
+                const searchUrl =
+                    "https://www.googleapis.com/drive/v3/files" +
+                    "?q=" +
+                    encodeURIComponent(query) +
+                    "&fields=files(id,name,modifiedTime)" +
+                    "&orderBy=modifiedTime desc" +
+                    "&pageSize=1";
+
+                const searchResponse =
+                    await fetch(
+                        searchUrl,
+                        {
+                            headers: {
+                                Authorization:
+                                    "Bearer " +
+                                    accessToken
+                            }
+                        }
+                    );
+
+                if (!searchResponse.ok) {
+
+                    console.error(
+                        "Google Driveファイル検索エラー:",
+                        searchResponse.status,
+                        await searchResponse.text()
+                    );
+
+                    return;
+                }
+
+                const searchData =
+                    await searchResponse.json();
+
+                if (
+                    searchData.files &&
+                    searchData.files.length > 0
+                ) {
+
+                    fileId =
+                        searchData.files[0].id;
+
+                    localStorage.setItem(
+                        DRIVE_FILE_ID_KEY,
+                        fileId
+                    );
+
+                    console.log(
+                        "既存のGoogle Driveファイルを使用します:",
+                        fileId
+                    );
+                }
+            }
+
+            let response;
+
+            if (fileId) {
+
+                response =
+                    await fetch(
+                        "https://www.googleapis.com/upload/drive/v3/files/" +
+                        fileId +
+                        "?uploadType=media&fields=id,name,modifiedTime",
+                        {
+                            method: "PATCH",
+
+                            headers: {
+                                Authorization:
+                                    "Bearer " +
+                                    accessToken,
+
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                jsonText
+                        }
+                    );
+
+            } else {
+
+                const metadata = {
+                    name:
+                        "WaterCheck.json",
+                    parents: [
+                        DRIVE_FOLDER_ID
+                    ],
+                    mimeType:
+                        "application/json"
+                };
+
+                const boundary =
+                    "-------WaterCheckBoundary";
+
+                const body =
+                    "--" + boundary + "\r\n" +
+                    "Content-Type: application/json; charset=UTF-8\r\n\r\n" +
+                    JSON.stringify(metadata) +
+                    "\r\n" +
+                    "--" + boundary + "\r\n" +
+                    "Content-Type: application/json\r\n\r\n" +
+                    jsonText +
+                    "\r\n" +
+                    "--" + boundary + "--";
+
+                response =
+                    await fetch(
+                        "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                Authorization:
+                                    "Bearer " +
+                                    accessToken,
+
+                                "Content-Type":
+                                    "multipart/related; boundary=" +
+                                    boundary
+                            },
+
+                            body:
+                                body
+                        }
+                    );
+            }
+
+            if (!response.ok) {
 
                 console.error(
-                    "Google Driveファイル検索エラー:",
-                    searchResponse.status,
-                    await searchResponse.text()
+                    "Google Drive保存エラー:",
+                    response.status,
+                    await response.text()
                 );
 
                 return;
             }
 
+            const data =
+                await response.json();
 
-            const searchData =
-                await searchResponse.json();
+            if (data.modifiedTime) {
 
+                lastDriveModifiedTime =
+                    data.modifiedTime;
+
+                console.log(
+                    "この端末からDriveへ保存した更新日時を記録しました:",
+                    data.modifiedTime
+                );
+            }
 
             if (
-                searchData.files &&
-                searchData.files.length > 0
+                !fileId &&
+                data.id
             ) {
-
-                fileId =
-                    searchData.files[0].id;
 
                 localStorage.setItem(
                     DRIVE_FILE_ID_KEY,
-                    fileId
+                    data.id
                 );
 
                 console.log(
-                    "既存のGoogle Driveファイルを使用します:",
-                    fileId
+                    "Google Driveファイルを作成しました:",
+                    data.id
+                );
+
+            } else {
+
+                console.log(
+                    "Google Driveを更新しました。"
                 );
             }
-        }
 
+            console.log(
+                "Google Driveへ写真を含めて保存しました:",
+                evidence.length,
+                "枚"
+            );
 
-        let response;
-
-
-        /*
-        --------------------------------------------
-        既存ファイルを更新
-        --------------------------------------------
-        */
-        if (fileId) {
-
-            response =
-                await fetch(
-                    "https://www.googleapis.com/upload/drive/v3/files/" +
-                    fileId +
-                    "?uploadType=media",
-                    {
-                        method: "PATCH",
-
-                        headers: {
-                            Authorization:
-                                "Bearer " +
-                                accessToken,
-
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body:
-                            jsonText
-                    }
-                );
-
-
-        /*
-        --------------------------------------------
-        ファイルが存在しない場合は新規作成
-        --------------------------------------------
-        */
-        } else {
-
-            const metadata = {
-
-                name:
-                    "WaterCheck.json",
-
-                parents: [
-                    DRIVE_FOLDER_ID
-                ],
-
-                mimeType:
-                    "application/json"
-            };
-
-
-            const boundary =
-                "-------WaterCheckBoundary";
-
-
-            const body =
-                "--" +
-                boundary +
-                "\r\n" +
-
-                "Content-Type: application/json; charset=UTF-8\r\n\r\n" +
-
-                JSON.stringify(
-                    metadata
-                ) +
-
-                "\r\n" +
-
-                "--" +
-                boundary +
-                "\r\n" +
-
-                "Content-Type: application/json\r\n\r\n" +
-
-                jsonText +
-
-                "\r\n" +
-
-                "--" +
-                boundary +
-                "--";
-
-
-            response =
-                await fetch(
-                    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
-                    {
-                        method: "POST",
-
-                        headers: {
-                            Authorization:
-                                "Bearer " +
-                                accessToken,
-
-                            "Content-Type":
-                                "multipart/related; boundary=" +
-                                boundary
-                        },
-
-                        body:
-                            body
-                    }
-                );
-        }
-
-
-        /*
-        --------------------------------------------
-        保存結果確認
-        --------------------------------------------
-        */
-        if (!response.ok) {
+        } catch (error) {
 
             console.error(
-                "Google Drive保存エラー:",
-                response.status,
-                await response.text()
-            );
-
-            return;
-        }
-
-
-        const data =
-            await response.json();
-
-
-        /*
-        --------------------------------------------
-        この端末が最後にDriveへ保存した
-        modifiedTimeを記録
-        --------------------------------------------
-        */
-        if (data.modifiedTime) {
-
-            lastDriveModifiedTime =
-                data.modifiedTime;
-
-            console.log(
-                "この端末からDriveへ保存した更新日時を記録しました:",
-                data.modifiedTime
+                "Google Drive保存中にエラーが発生しました:",
+                error
             );
         }
-
-
-        /*
-        --------------------------------------------
-        新規作成時はファイルIDを保存
-        --------------------------------------------
-        */
-        if (
-            !fileId &&
-            data.id
-        ) {
-
-            localStorage.setItem(
-                DRIVE_FILE_ID_KEY,
-                data.id
-            );
-
-            console.log(
-                "Google Driveファイルを作成しました:",
-                data.id
-            );
-
-        } else {
-
-            console.log(
-                "Google Driveを更新しました。"
-            );
-        }
-
-
-        console.log(
-            "Google Driveへ写真を含めて保存しました:",
-            evidence.length,
-            "枚"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Google Drive保存中にエラーが発生しました:",
-            error
-        );
     }
-}
 </script>
 
 </body>
