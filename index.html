@@ -168,7 +168,13 @@
     background: #121212;
 }
 
-/* 表の見出しを進捗バー直下へ固定 */
+/* 表の見出しを進捗バー直下へ固定
+   mainArea を縦方向の sticky 基準にしないことで、
+   PC/スマホとも見出し行が元の位置からずれないようにする */
+#mainArea {
+    overflow: visible !important;
+}
+
 #checkTable thead th {
     position: sticky;
     top: var(--progress-sticky-height, 0px);
