@@ -168,27 +168,28 @@
     background: #121212;
 }
 
-/* Sticky が PC / スマホのどちらでも viewport 基準で動くようにする */
+/* 横方向はページ全体をスクロール可能にする。
+   縦方向の sticky は viewport 基準のまま維持する。 */
 html,
 body,
 #app {
-    overflow-x: clip;
+    overflow-x: visible;
 }
 
 #mainArea {
     overflow: visible !important;
 }
 
-/* 表見出しは行全体を進捗バー直下に固定する。
-   th 個別を sticky にしないことで通常位置のずれも防ぐ。 */
+/* 表見出しは各セルを進捗バー直下に固定。
+   横スクロール時は表本体と同じ座標系で一緒に移動する。 */
 #checkTable thead {
-    position: sticky;
-    top: var(--progress-sticky-height, 0px);
-    z-index: 90;
+    position: static;
 }
 
 #checkTable thead th {
-    position: static !important;
+    position: sticky !important;
+    top: var(--progress-sticky-height, 0px);
+    z-index: 90;
     background: #2a2a2a;
 }
 
