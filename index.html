@@ -116,6 +116,33 @@
             0 0 8px #ff1744;
     }
 }
+
+/* 進捗文字をバー中央に重ねて常時読みやすく表示 */
+#progressBar {
+    position: relative;
+    overflow: hidden;
+}
+
+#progressText {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2em;
+    z-index: 2;
+    color: #ffffff;
+    font-weight: 800;
+    line-height: 1;
+    pointer-events: none;
+    text-shadow:
+        -1px -1px 0 #000000,
+         1px -1px 0 #000000,
+        -1px  1px 0 #000000,
+         1px  1px 0 #000000,
+         0 0 4px #000000;
+}
+
 </style>
 
 </head>
@@ -132,12 +159,8 @@
 <header id="header">
 
     <h1 id="appTitle">
-        WaterCheck
+        WaterCheck <span id="appSubTitle" style="font-size: 0.45em; font-weight: normal; vertical-align: middle; white-space: nowrap;">Ver.1.0.08</span>
     </h1>
-
-    <p id="appSubTitle">
-        Ver.1.0.07
-    </p>
 
 </header>
 
@@ -147,22 +170,6 @@
 
 <section id="progressArea">
 
-    <div id="progressText">
-
-        <span id="completedCount">
-            0
-        </span>
-
-        /
-
-        <span id="totalCount">
-            0
-        </span>
-
-        完了
-
-    </div>
-
     <div id="progressBarArea">
 
         <div id="progressBar">
@@ -171,19 +178,14 @@
 
             </div>
 
+            <div id="progressText">
+                <span id="completedCount">0</span>
+                /
+                <span id="totalCount">0</span>
+                完了
+            </div>
+
         </div>
-
-    </div>
-
-    <div id="remainingArea">
-
-        残り：
-
-        <span id="remainingCount">
-            0
-        </span>
-
-        件
 
     </div>
 
