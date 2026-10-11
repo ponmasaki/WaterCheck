@@ -194,6 +194,43 @@ body,
 }
 
 
+/* Fixed action bar and reliable sticky table headings */
+:root { --wc-footer-height: 76px; }
+#footer {
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    bottom: env(safe-area-inset-bottom, 0px);
+    z-index: 200;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    box-sizing: border-box;
+    padding: 8px max(8px, env(safe-area-inset-right, 0px))
+             8px max(8px, env(safe-area-inset-left, 0px));
+    background: #121212;
+    border-top: 1px solid #555;
+}
+#footer button {
+    flex: 0 1 auto;
+    min-height: 40px;
+    white-space: nowrap;
+}
+#app { padding-bottom: calc(var(--wc-footer-height) + 12px) !important; }
+#checkTable { border-collapse: separate; border-spacing: 0; }
+#checkTable thead th {
+    position: sticky !important;
+    top: var(--progress-sticky-height, 0px) !important;
+    z-index: 90 !important;
+    background: #2a2a2a !important;
+}
+@media (max-width: 480px) {
+    #footer { gap: 4px; padding: 6px 4px; }
+    #footer button { padding: 7px 6px; font-size: 12px; }
+}
+
 /* Ver.1 readability pass: retain all seven visible columns and existing sticky behavior. */
 #mainArea { padding: 6px !important; }
 #checkTable {
@@ -1598,6 +1635,22 @@ Ver1.0.08
         );
     }
 
+    function updateFooterHeight() {
+        const footer = document.getElementById("footer");
+        if (!footer) return;
+        document.documentElement.style.setProperty(
+            "--wc-footer-height", footer.offsetHeight + "px"
+        );
+    }
+    window.addEventListener("DOMContentLoaded", function () {
+        updateFooterHeight();
+        const footer = document.getElementById("footer");
+        if ("ResizeObserver" in window && footer) {
+            new ResizeObserver(updateFooterHeight).observe(footer);
+        }
+    });
+    window.addEventListener("resize", updateFooterHeight);
+    window.addEventListener("load", updateFooterHeight);
     window.addEventListener("load", updateStickyProgressHeight);
     window.addEventListener("resize", updateStickyProgressHeight);
 
