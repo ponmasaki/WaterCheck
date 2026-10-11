@@ -193,6 +193,75 @@ body,
     background: #2a2a2a;
 }
 
+
+/* Ver.1 readability pass: retain all seven visible columns and existing sticky behavior. */
+#mainArea { padding: 6px !important; }
+#checkTable {
+    width: 100%;
+    min-width: 700px;
+    table-layout: fixed;
+}
+#checkTable th, #checkTable td {
+    box-sizing: border-box;
+    padding: 5px 3px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+#checkTable th { padding: 8px 2px; white-space: normal; }
+#checkTable .colNo, #checkTable tr > :nth-child(1) { width: 39px; }
+#checkTable .colPlace, #checkTable tr > :nth-child(2) { width: 130px; }
+#checkTable .colStatus, #checkTable tr > :nth-child(3) { width: 45px; }
+#checkTable .colPhoto, #checkTable tr > :nth-child(4) { width: 71px; }
+#checkTable .colCheckTime, #checkTable tr > :nth-child(5) { width: 94px; }
+#checkTable .colPhotoTime, #checkTable tr > :nth-child(6) { width: 94px; }
+#checkTable .colMemo, #checkTable tr > :nth-child(7) { width: auto; }
+#checkTable tbody td:nth-child(2) {
+    text-align: left;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    line-break: strict;
+}
+#checkTable tbody td:nth-child(5),
+#checkTable tbody td:nth-child(6) { font-variant-numeric: tabular-nums; }
+#checkTable .wc-date, #checkTable .wc-clock { display: block; white-space: nowrap; }
+#checkTable .wc-clock { font-size: 13px; color: #dedede; }
+#checkTable tbody td:nth-child(7) { padding: 4px; }
+#checkTable .memo-input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding: 5px 6px;
+    font-size: 14px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+#checkTable .photo-button {
+    min-width: 40px;
+    min-height: 40px;
+    width: 42px;
+    height: 42px;
+    padding: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+#checkTable .camera-icon { width: 28px; height: 28px; object-fit: contain; }
+#checkTable tbody td:nth-child(3) input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    cursor: pointer;
+}
+#checkTable tbody td:nth-child(4) .photo-preview {
+    max-width: 60px;
+    max-height: 60px;
+    object-fit: cover;
+}
+@media (max-width: 768px) {
+    #checkTable th, #checkTable td { font-size: 14px; }
+    #checkTable .memo-input { font-size: 14px; }
+}
+
 </style>
 
 </head>
@@ -1542,6 +1611,48 @@ Ver1.0.08
             updateStickyProgressHeight();
         });
     }
+})();
+</script>
+
+
+<script>
+/* Presentation only: split displayed timestamps without changing saved data. */
+(function () {
+    function formatVisibleDates() {
+        const body = document.getElementById('checkTableBody');
+        if (!body) return;
+        body.querySelectorAll('tr').forEach(function (row) {
+            [4, 5].forEach(function (index) {
+                const cell = row.cells[index];
+                if (!cell || cell.querySelector('.wc-date')) return;
+                const value = cell.textContent.trim();
+                // Supports Japanese locale and ISO-like date/time, with optional seconds.
+                const match = value.match(/^(\d{4}[\/.-]\d{1,2}[\/.-]\d{1,2})[\sT]+(\d{1,2}:\d{2}(?::\d{2})?)(.*)$/);
+                if (!match) return;
+                const date = document.createElement('span');
+                date.className = 'wc-date';
+                date.textContent = match[1];
+                const time = document.createElement('span');
+                time.className = 'wc-clock';
+                time.textContent = match[2] + match[3];
+                cell.replaceChildren(date, time);
+            });
+        });
+    }
+    function start() {
+        const body = document.getElementById('checkTableBody');
+        if (!body) return;
+        let queued = false;
+        const observer = new MutationObserver(function () {
+            if (queued) return;
+            queued = true;
+            requestAnimationFrame(function () { queued = false; formatVisibleDates(); });
+        });
+        observer.observe(body, { childList: true, subtree: true, characterData: true });
+        formatVisibleDates();
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+    else start();
 })();
 </script>
 
