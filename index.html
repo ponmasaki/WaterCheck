@@ -194,6 +194,8 @@ body,
 }
 
 
+#wcPinnedHeader th { position: static !important; top: auto !important; }
+#wcPinnedHeader { background: #2a2a2a; }
 /* Fixed action bar and reliable sticky table headings */
 :root { --wc-footer-height: 76px; }
 #footer {
@@ -1651,6 +1653,83 @@ Ver1.0.08
     });
     window.addEventListener("resize", updateFooterHeight);
     window.addEventListener("load", updateFooterHeight);
+    // Keep the action bar outside application containers that may establish
+    // a containing block for fixed-position descendants.
+    function mountPersistentUI() {
+        const footer = document.getElementById("footer");
+        if (footer && footer.parentElement !== document.body) {
+            document.body.appendChild(footer);
+        }
+        if (footer) {
+            footer.style.setProperty("position", "fixed", "important");
+            footer.style.setProperty("bottom", "0px", "important");
+            footer.style.setProperty("left", "0px", "important");
+            footer.style.setProperty("right", "0px", "important");
+            footer.style.setProperty("z-index", "10000", "important");
+        }
+        updateFooterHeight();
+        setupPinnedTableHeader();
+    }
+
+    function setupPinnedTableHeader() {
+        const table = document.getElementById("checkTable");
+        const thead = table && table.tHead;
+        const progress = document.getElementById("progressArea");
+        if (!table || !thead || !progress || document.getElementById("wcPinnedHeader")) return;
+
+        // A separate fixed copy is needed because sticky table cells cannot
+        // reliably stick to the viewport inside horizontal scroll containers.
+        const copy = document.createElement("table");
+        copy.id = "wcPinnedHeader";
+        copy.setAttribute("aria-hidden", "true");
+        copy.appendChild(thead.cloneNode(true));
+        document.body.appendChild(copy);
+        Object.assign(copy.style, {
+            position: "fixed", display: "none", pointerEvents: "none",
+            zIndex: "999", margin: "0", borderSpacing: "0",
+            borderCollapse: "separate", tableLayout: "fixed"
+        });
+        const originalCells = Array.from(thead.rows[0].cells);
+        const copiedCells = Array.from(copy.tHead.rows[0].cells);
+        function sync() {
+            const tableRect = table.getBoundingClientRect();
+            const headerRect = thead.getBoundingClientRect();
+            const progressRect = progress.getBoundingClientRect();
+            const top = Math.max(0, progressRect.bottom);
+            const visible = headerRect.top < top &&
+                tableRect.bottom > top + headerRect.height;
+            copy.style.display = visible ? "table" : "none";
+            if (!visible) return;
+            copy.style.left = tableRect.left + "px";
+            copy.style.top = top + "px";
+            copy.style.width = tableRect.width + "px";
+            copy.style.height = headerRect.height + "px";
+            copiedCells.forEach((cell, i) => {
+                const rect = originalCells[i].getBoundingClientRect();
+                cell.style.boxSizing = "border-box";
+                cell.style.width = rect.width + "px";
+                cell.style.minWidth = rect.width + "px";
+                cell.style.maxWidth = rect.width + "px";
+                cell.style.height = rect.height + "px";
+                cell.style.background = "#2a2a2a";
+                cell.style.color = getComputedStyle(originalCells[i]).color;
+                cell.style.padding = getComputedStyle(originalCells[i]).padding;
+                cell.style.font = getComputedStyle(originalCells[i]).font;
+                cell.style.border = getComputedStyle(originalCells[i]).border;
+            });
+        }
+        window.addEventListener("scroll", sync, {passive:true});
+        window.addEventListener("resize", sync);
+        document.addEventListener("scroll", sync, {passive:true, capture:true});
+        if ("ResizeObserver" in window) {
+            new ResizeObserver(sync).observe(table);
+            new ResizeObserver(sync).observe(progress);
+        }
+        sync();
+    }
+    window.addEventListener("DOMContentLoaded", mountPersistentUI);
+    window.addEventListener("load", mountPersistentUI);
+
     window.addEventListener("load", updateStickyProgressHeight);
     window.addEventListener("resize", updateStickyProgressHeight);
 
